@@ -8,12 +8,6 @@
       "languageVersion": "2.18"
     },
     {
-      "name": "bloc",
-      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/bloc-8.1.4",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
       "name": "boolean_selector",
       "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/boolean_selector-2.1.1",
       "packageUri": "lib/",
@@ -27,7 +21,7 @@
     },
     {
       "name": "camera_android_camerax",
-      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/camera_android_camerax-0.6.8+3",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/camera_android_camerax-0.6.9+2",
       "packageUri": "lib/",
       "languageVersion": "3.5"
     },
@@ -86,8 +80,26 @@
       "languageVersion": "2.12"
     },
     {
-      "name": "ffi",
-      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/ffi-2.1.3",
+      "name": "file_selector_linux",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/file_selector_linux-0.9.3",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "file_selector_macos",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/file_selector_macos-0.9.4+2",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "file_selector_platform_interface",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/file_selector_platform_interface-2.6.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
+      "name": "file_selector_windows",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/file_selector_windows-0.9.3+3",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
@@ -105,9 +117,9 @@
     },
     {
       "name": "flutter_plugin_android_lifecycle",
-      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_plugin_android_lifecycle-2.0.22",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_plugin_android_lifecycle-2.0.23",
       "packageUri": "lib/",
-      "languageVersion": "3.4"
+      "languageVersion": "3.5"
     },
     {
       "name": "flutter_test",
@@ -120,6 +132,72 @@
       "rootUri": "file:///C:/Users/seong/Frameworks/flutter/packages/flutter_web_plugins",
       "packageUri": "lib/",
       "languageVersion": "3.2"
+    },
+    {
+      "name": "gal",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/gal-2.3.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
+      "name": "http",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/http-1.2.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "http_parser",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/http_parser-4.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "image_picker",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker-1.1.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "image_picker_android",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_android-0.8.12+15",
+      "packageUri": "lib/",
+      "languageVersion": "3.5"
+    },
+    {
+      "name": "image_picker_for_web",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_for_web-3.0.5",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "image_picker_ios",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_ios-0.8.12",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "image_picker_linux",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_linux-0.2.1+1",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
+    },
+    {
+      "name": "image_picker_macos",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_macos-0.2.1+1",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
+    },
+    {
+      "name": "image_picker_platform_interface",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_platform_interface-2.10.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "image_picker_windows",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_windows-0.2.1+1",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
     },
     {
       "name": "leak_tracker",
@@ -164,88 +242,16 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "mime",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/mime-1.0.6",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
       "name": "path",
       "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/path-1.9.0",
       "packageUri": "lib/",
       "languageVersion": "3.0"
-    },
-    {
-      "name": "path_provider",
-      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider-2.1.4",
-      "packageUri": "lib/",
-      "languageVersion": "3.2"
-    },
-    {
-      "name": "path_provider_android",
-      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_android-2.2.10",
-      "packageUri": "lib/",
-      "languageVersion": "3.4"
-    },
-    {
-      "name": "path_provider_foundation",
-      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_foundation-2.4.0",
-      "packageUri": "lib/",
-      "languageVersion": "3.2"
-    },
-    {
-      "name": "path_provider_linux",
-      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_linux-2.2.1",
-      "packageUri": "lib/",
-      "languageVersion": "2.19"
-    },
-    {
-      "name": "path_provider_platform_interface",
-      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_platform_interface-2.1.2",
-      "packageUri": "lib/",
-      "languageVersion": "3.0"
-    },
-    {
-      "name": "path_provider_windows",
-      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_windows-2.3.0",
-      "packageUri": "lib/",
-      "languageVersion": "3.2"
-    },
-    {
-      "name": "permission_handler",
-      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/permission_handler-11.3.1",
-      "packageUri": "lib/",
-      "languageVersion": "2.15"
-    },
-    {
-      "name": "permission_handler_android",
-      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/permission_handler_android-12.0.12",
-      "packageUri": "lib/",
-      "languageVersion": "2.15"
-    },
-    {
-      "name": "permission_handler_apple",
-      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/permission_handler_apple-9.4.5",
-      "packageUri": "lib/",
-      "languageVersion": "2.15"
-    },
-    {
-      "name": "permission_handler_html",
-      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/permission_handler_html-0.1.3+2",
-      "packageUri": "lib/",
-      "languageVersion": "3.3"
-    },
-    {
-      "name": "permission_handler_platform_interface",
-      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/permission_handler_platform_interface-4.2.3",
-      "packageUri": "lib/",
-      "languageVersion": "2.14"
-    },
-    {
-      "name": "permission_handler_windows",
-      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/permission_handler_windows-0.2.1",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
-      "name": "platform",
-      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/platform-3.1.5",
-      "packageUri": "lib/",
-      "languageVersion": "3.2"
     },
     {
       "name": "plugin_platform_interface",
@@ -302,6 +308,12 @@
       "languageVersion": "3.2"
     },
     {
+      "name": "typed_data",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/typed_data-1.3.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
       "name": "vector_math",
       "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/vector_math-2.1.4",
       "packageUri": "lib/",
@@ -315,15 +327,9 @@
     },
     {
       "name": "web",
-      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/web-1.0.0",
+      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/web-1.1.0",
       "packageUri": "lib/",
       "languageVersion": "3.4"
-    },
-    {
-      "name": "xdg_directories",
-      "rootUri": "file:///C:/Users/seong/AppData/Local/Pub/Cache/hosted/pub.dev/xdg_directories-1.0.4",
-      "packageUri": "lib/",
-      "languageVersion": "3.0"
     },
     {
       "name": "food_app_flutter",
@@ -332,7 +338,7 @@
       "languageVersion": "3.5"
     }
   ],
-  "generated": "2024-10-01T13:33:28.003212Z",
+  "generated": "2024-10-07T09:48:42.446968Z",
   "generator": "pub",
   "generatorVersion": "3.5.3",
   "flutterRoot": "file:///C:/Users/seong/Frameworks/flutter",
