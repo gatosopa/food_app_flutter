@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'src/common/widgets/bottom_navigation_bar.dart';
+import 'src/core/widgets/bottom_navigation_bar.dart';
 import 'src/features/home/home_page.dart';
-import 'src/features/camera/camera.dart';
+import 'src/features/camera/presentation/view/camera_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

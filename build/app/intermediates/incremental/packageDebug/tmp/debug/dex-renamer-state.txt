@@ -1,4 +1,4 @@
-#Mon Oct 07 18:49:58 KST 2024
+#Mon Oct 28 22:33:05 KST 2024
 base.0=C\:\\Users\\seong\\Projects\\Food App\\food_app_flutter\\build\\app\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
 base.1=C\:\\Users\\seong\\Projects\\Food App\\food_app_flutter\\build\\app\\intermediates\\dex\\debug\\mergeLibDexDebug\\0\\classes.dex
 base.2=C\:\\Users\\seong\\Projects\\Food App\\food_app_flutter\\build\\app\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
