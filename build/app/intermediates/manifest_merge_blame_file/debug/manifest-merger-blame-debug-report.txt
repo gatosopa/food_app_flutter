@@ -43,15 +43,15 @@
 29    </queries>
 30
 31    <uses-feature android:name="android.hardware.camera.any" />
-31-->[:camera_android_camerax] C:\Users\seong\Projects\Food App\food_app_flutter\build\camera_android_camerax\intermediates\merged_manifest\debug\AndroidManifest.xml:8:5-64
-31-->[:camera_android_camerax] C:\Users\seong\Projects\Food App\food_app_flutter\build\camera_android_camerax\intermediates\merged_manifest\debug\AndroidManifest.xml:8:19-61
+31-->[:camera_android_camerax] C:\Users\seong\Projects\Food App\food_app_flutter\build\camera_android_camerax\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-64
+31-->[:camera_android_camerax] C:\Users\seong\Projects\Food App\food_app_flutter\build\camera_android_camerax\intermediates\merged_manifest\debug\AndroidManifest.xml:7:19-61
 32
 33    <uses-permission android:name="android.permission.CAMERA" />
-33-->[:camera_android_camerax] C:\Users\seong\Projects\Food App\food_app_flutter\build\camera_android_camerax\intermediates\merged_manifest\debug\AndroidManifest.xml:10:5-65
-33-->[:camera_android_camerax] C:\Users\seong\Projects\Food App\food_app_flutter\build\camera_android_camerax\intermediates\merged_manifest\debug\AndroidManifest.xml:10:22-62
+33-->[:camera_android_camerax] C:\Users\seong\Projects\Food App\food_app_flutter\build\camera_android_camerax\intermediates\merged_manifest\debug\AndroidManifest.xml:9:5-65
+33-->[:camera_android_camerax] C:\Users\seong\Projects\Food App\food_app_flutter\build\camera_android_camerax\intermediates\merged_manifest\debug\AndroidManifest.xml:9:22-62
 34    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-34-->[:camera_android_camerax] C:\Users\seong\Projects\Food App\food_app_flutter\build\camera_android_camerax\intermediates\merged_manifest\debug\AndroidManifest.xml:11:5-71
-34-->[:camera_android_camerax] C:\Users\seong\Projects\Food App\food_app_flutter\build\camera_android_camerax\intermediates\merged_manifest\debug\AndroidManifest.xml:11:22-68
+34-->[:camera_android_camerax] C:\Users\seong\Projects\Food App\food_app_flutter\build\camera_android_camerax\intermediates\merged_manifest\debug\AndroidManifest.xml:10:5-71
+34-->[:camera_android_camerax] C:\Users\seong\Projects\Food App\food_app_flutter\build\camera_android_camerax\intermediates\merged_manifest\debug\AndroidManifest.xml:10:22-68
 35
 36    <permission
 36-->[androidx.core:core:1.13.1] C:\Users\seong\.gradle\caches\transforms-3\c666c258fca39b3353b46678a6b928ab\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
