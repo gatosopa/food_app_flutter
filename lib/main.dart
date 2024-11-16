@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:food_app_flutter/src/features/onboarding/onboarding_page.dart';
 import 'src/core/widgets/bottom_navigation_bar.dart';
 import 'src/features/home/home_page.dart';
 import 'src/features/camera/presentation/view/camera_page.dart';
 
-void main() async {
+  void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const FoodApp());
 }
@@ -13,8 +14,10 @@ class FoodApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: MainScreen(),
+    return  MaterialApp(
+      title: 'Onboarding Screen',
+      home: OnboardingScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -30,7 +33,7 @@ class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = <Widget>[
-    HomePage(),
+    const HomePage(),
     const CameraPage(),
   ];
 

@@ -1,31 +1,24 @@
 1<?xml version="1.0" encoding="utf-8"?>
 2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-3    xmlns:tools="http://schemas.android.com/tools"
-4    package="io.flutter.plugins.camerax" >
-5
-6    <uses-sdk android:minSdkVersion="21" />
-7
-8    <uses-feature android:name="android.hardware.camera.any" />
-8-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.8+3\android\src\main\AndroidManifest.xml:4:3-62
-8-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.8+3\android\src\main\AndroidManifest.xml:4:17-59
-9
-10    <uses-permission android:name="android.permission.CAMERA" />
-10-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.8+3\android\src\main\AndroidManifest.xml:5:3-63
-10-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.8+3\android\src\main\AndroidManifest.xml:5:20-60
-11    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-11-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.8+3\android\src\main\AndroidManifest.xml:6:3-69
-11-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.8+3\android\src\main\AndroidManifest.xml:6:20-66
-12    <uses-permission
-12-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.8+3\android\src\main\AndroidManifest.xml:7:3-8:34
-13        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-13-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.8+3\android\src\main\AndroidManifest.xml:7:20-76
-14        android:maxSdkVersion="28" />
-14-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.8+3\android\src\main\AndroidManifest.xml:8:5-31
-15    <uses-permission
-15-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.8+3\android\src\main\AndroidManifest.xml:9:3-10:27
-16        android:name="android.permission.READ_EXTERNAL_STORAGE"
-16-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.8+3\android\src\main\AndroidManifest.xml:9:20-75
-17        tools:node="remove" />
-17-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.8+3\android\src\main\AndroidManifest.xml:10:5-24
-18
-19</manifest>
+3    package="io.flutter.plugins.camerax" >
+4
+5    <uses-sdk android:minSdkVersion="21" />
+6
+7    <uses-feature android:name="android.hardware.camera.any" />
+7-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.10\android\src\main\AndroidManifest.xml:3:3-62
+7-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.10\android\src\main\AndroidManifest.xml:3:17-59
+8
+9    <uses-permission android:name="android.permission.CAMERA" />
+9-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.10\android\src\main\AndroidManifest.xml:4:3-63
+9-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.10\android\src\main\AndroidManifest.xml:4:20-60
+10    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+10-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.10\android\src\main\AndroidManifest.xml:5:3-69
+10-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.10\android\src\main\AndroidManifest.xml:5:20-66
+11    <uses-permission
+11-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.10\android\src\main\AndroidManifest.xml:6:3-7:34
+12        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+12-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.10\android\src\main\AndroidManifest.xml:6:20-76
+13        android:maxSdkVersion="28" />
+13-->C:\Users\seong\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android_camerax-0.6.10\android\src\main\AndroidManifest.xml:7:5-31
+14
+15</manifest>
