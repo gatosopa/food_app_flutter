@@ -118,6 +118,13 @@ class _CameraPageState extends State<CameraPage> {
             if (state is CameraImageSelected) {
               _showImagePopup(context, state.image);
             } else if (state is CameraUploadCompleted) {
+              // Debugging: Log the response
+              print('CameraUploadCompleted: ${state.response}');
+              // Check if 'ingredients' exist in response
+              final ingredients = state.response['ingredients'] ?? [];
+              if (ingredients.isEmpty) {
+                print('No ingredients found in response.');
+              }
               Navigator.push(
                 context,
                 MaterialPageRoute(
