@@ -66,11 +66,17 @@ class CameraCubit extends Cubit<CameraState> {
   Future<void> uploadImage(File image) async {
     try {
       final response = await cameraRepository.uploadImage(image);
+
+      // Debugging: Log the response
+      print('Upload response: $response');
+
+      // Ensure 'response' is passed as a Map
       emit(CameraUploadCompleted(response));
     } catch (e) {
       emit(CameraError('Failed to upload image: $e'));
     }
   }
+
 
   @override
   Future<void> close() {

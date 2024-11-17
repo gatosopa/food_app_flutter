@@ -42,7 +42,7 @@ Future<Map<String, dynamic>> uploadImage(File image) async {
     final dio = Dio();
     final fileName = image.path.split('/').last;
 
-    // Use FormData with a 'file' key, similar to the requests library
+    // Ensure the image is being added correctly
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(
         image.path,
@@ -50,26 +50,32 @@ Future<Map<String, dynamic>> uploadImage(File image) async {
       ),
     });
 
+    print('Uploading image: ${image.path}'); // Log image path for debugging
+
     final response = await dio.post(
-      '${Constants.serverIP}/upload', // Upload image url route
+      '${Constants.serverIP}/upload', // Update this with the correct server endpoint
       data: formData,
     );
 
+    print('Server response status: ${response.statusCode}'); // Log server response status
+
     if (response.statusCode == 200) {
-      try {
+      print('Server response data: ${response.data}'); // Log response data
+      if (response.data is String) {
         return jsonDecode(response.data);
-      } catch (e) {
-        return {'message': response.data};
+      } else if (response.data is Map<String, dynamic>) {
+        return response.data;
+      } else {
+        throw Exception('Unexpected server response format.');
       }
     } else {
-      print('Upload failed: ${response.statusCode}');
+      throw Exception('Server responded with status: ${response.statusCode}');
     }
   } catch (e) {
-    print('Error uploading image: $e');
+    print('Error during upload: $e');
+    throw Exception('Failed to upload image: $e');
   }
-  return {};
 }
-
 
   void dispose() {
     _controller?.dispose();
