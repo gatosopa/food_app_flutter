@@ -4,12 +4,11 @@ import 'package:camera/camera.dart';
 import '../../data/repositories/camera_repository.dart';
 import 'camera_state.dart';
 import 'package:gal/gal.dart';
+import 'package:image_picker/image_picker.dart';
 
 class CameraCubit extends Cubit<CameraState> {
   final CameraRepository cameraRepository;
   CameraController? _controller;
-  XFile? capturedImage;
-  File? galleryImage;
 
   CameraCubit({required this.cameraRepository}) : super(CameraInitial());
 
@@ -19,7 +18,7 @@ class CameraCubit extends Cubit<CameraState> {
   Future<void> initializeCamera() async {
     try {
       final cameras = await availableCameras();
-      _controller = CameraController(cameras[0], ResolutionPreset.max);
+      _controller = CameraController(cameras.first, ResolutionPreset.max);
       await _controller!.initialize();
       emit(CameraInitialized(_controller!));
     } catch (e) {
@@ -29,40 +28,37 @@ class CameraCubit extends Cubit<CameraState> {
 
   bool get isCameraInitialized => _controller?.value.isInitialized ?? false;
 
+  // Capture an image from the camera
+  Future<void> takePicture() async {
+    if (!isCameraInitialized) {
+      emit(CameraError('Camera is not initialized.'));
+      return;
+    }
 
-  // Capture a picture from the camera
-Future<void> takePicture() async {
-  if (_controller?.value.isInitialized != true) {
-    emit(CameraError('Camera is not initialized.'));
-    return;
+    try {
+      final XFile image = await _controller!.takePicture();
+      final file = File(image.path);
+
+      // Save the image to the gallery
+      await Gal.putImage(image.path);
+
+      emit(CameraImageSelected(file, source: ImageSource.camera));
+    } catch (e) {
+      emit(CameraError('Failed to capture image: $e'));
+    }
   }
-
-  try {
-    final XFile image = await _controller!.takePicture();
-    capturedImage = image;
-
-    // Save the image to the gallery using Gal
-    await Gal.putImage(image.path);
-
-    emit(CameraPictureTaken(image));
-  } catch (e) {
-    emit(CameraError('Failed to capture or save image: $e'));
-  }
-}
-
 
   // Select an image from the gallery
   Future<void> pickImageFromGallery() async {
     try {
-      final File? pickedFile = await (cameraRepository.pickImageFromGallery());
+      final File? pickedFile = await cameraRepository.pickImageFromGallery();
       if (pickedFile != null) {
-        galleryImage = File(pickedFile.path);
-        emit(CameraGalleryImageSelected(galleryImage!));
+        emit(CameraImageSelected(pickedFile, source: ImageSource.gallery));
       } else {
-        emit(CameraError('No image selected from gallery.'));
+        emit(CameraError('No image selected.'));
       }
     } catch (e) {
-      emit(CameraError('Failed to pick image from gallery: $e'));
+      emit(CameraError('Failed to pick image: $e'));
     }
   }
 

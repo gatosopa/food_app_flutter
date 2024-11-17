@@ -23,10 +23,14 @@ class _EditablePageState extends State<EditablePage> {
     super.initState();
     // Parse the JSON and initialize controllers for each ingredient
     final data = jsonDecode(widget.jsonData);
-    List<String> ingredients = List<String>.from(data['ingredients']);
-    _controllers =
-        ingredients.map((ingredient) => TextEditingController(text: ingredient)).toList();
+
+    // Safely retrieve ingredients, fallback to an empty list if null
+    List<String> ingredients = List<String>.from(data['ingredients'] ?? []);
+
+    // Initialize controllers for each ingredient
+    _controllers = ingredients.map((ingredient) => TextEditingController(text: ingredient)).toList();
   }
+
 
   @override
   void dispose() {

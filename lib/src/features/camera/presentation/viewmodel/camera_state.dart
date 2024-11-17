@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
+import 'package:image_picker/image_picker.dart';
 
 abstract class CameraState {}
 
@@ -12,16 +13,11 @@ class CameraInitialized extends CameraState {
   CameraInitialized(this.controller);
 }
 
-// State when an image is captured from the camera
-class CameraPictureTaken extends CameraState {
-  final XFile image;
-  CameraPictureTaken(this.image);
-}
-
-// State when an image is selected from the gallery
-class CameraGalleryImageSelected extends CameraState {
+// Unified state for image selection
+class CameraImageSelected extends CameraState {
   final File image;
-  CameraGalleryImageSelected(this.image);
+  final ImageSource source; // Indicates the source of the image (camera/gallery)
+  CameraImageSelected(this.image, {required this.source});
 }
 
 // State when an image is successfully uploaded
@@ -30,7 +26,7 @@ class CameraUploadCompleted extends CameraState {
   CameraUploadCompleted(this.response);
 }
 
-// State for any error that occurs
+// State for errors
 class CameraError extends CameraState {
   final String message;
   CameraError(this.message);

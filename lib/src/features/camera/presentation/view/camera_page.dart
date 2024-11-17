@@ -28,7 +28,6 @@ class _CameraPageState extends State<CameraPage> {
 
   Future<void> _initializeCamera() async {
     await _cameraCubit.initializeCamera();
-    if (!mounted) return;
     setState(() {});
   }
 
@@ -71,8 +70,8 @@ class _CameraPageState extends State<CameraPage> {
                 label: const Text('Upload Image'),
                 style: ElevatedButton.styleFrom(
                   textStyle: const TextStyle(color: Colors.white),
+                  foregroundColor: Colors.white,
                   backgroundColor: Colors.red,
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
@@ -80,15 +79,6 @@ class _CameraPageState extends State<CameraPage> {
               ),
 
               const SizedBox(height: 10),
-
-              // Close Button
-              IconButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                icon: const Icon(Icons.close, color: Colors.black),
-                iconSize: 30,
-              ),
             ],
           ),
         );
@@ -107,27 +97,32 @@ class _CameraPageState extends State<CameraPage> {
     }
 
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(85, 0, 0, 0),
+        backgroundColor: Colors.black, // Black background for the app bar
+        elevation: 0, // Remove the app bar shadow
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 8.0, top: 5.0), // Adjust position
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.red, size: 28), // Red back arrow
+            onPressed: () {
+              Navigator.pop(context); // Navigate back
+            },
+          ),
+        ),
       ),
       body: BlocProvider(
         create: (_) => _cameraCubit,
         child: BlocListener<CameraCubit, CameraState>(
           listener: (context, state) {
-            if (state is CameraUploadCompleted) {
-              final ingredients = state.response != null &&
-                      state.response['message'] != null &&
-                      state.response['message']['ingredients'] != null
-                  ? state.response['message']['ingredients']
-                  : []; // Default to empty list if missing
-
-              final response = {'ingredients': ingredients};
-
+            if (state is CameraImageSelected) {
+              _showImagePopup(context, state.image);
+            } else if (state is CameraUploadCompleted) {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => EditablePage(
-                    jsonData: jsonEncode(response),
+                    jsonData: jsonEncode(state.response),
                   ),
                 ),
               );
@@ -137,22 +132,44 @@ class _CameraPageState extends State<CameraPage> {
               );
             }
           },
-          child: CameraView(
-            cameraPreview: _cameraCubit.controller != null
-                ? CameraPreview(_cameraCubit.controller!)
-                : const SizedBox(),
-            onTakePicture: () async {
-              await _cameraCubit.takePicture();
-              if (_cameraCubit.capturedImage != null) {
-                _showImagePopup(context, File(_cameraCubit.capturedImage!.path));
-              }
-            },
-            onPickImage: () async {
-              await _cameraCubit.pickImageFromGallery();
-              if (_cameraCubit.galleryImage != null) {
-                _showImagePopup(context, _cameraCubit.galleryImage!);
-              }
-            },
+          child: Column(
+            children: [
+              // Camera view
+              Expanded(
+                child: CameraView(
+                  cameraPreview: CameraPreview(_cameraCubit.controller!),
+                  onTakePicture: _cameraCubit.takePicture,
+                  onPickImage: _cameraCubit.pickImageFromGallery,
+                ),
+              ),
+              // Bottom black bar with camera and gallery buttons
+              Container(
+                color: Colors.black,
+                height: 80,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      onPressed: _cameraCubit.pickImageFromGallery,
+                      icon: const Icon(Icons.image, color: Colors.white, size: 30),
+                    ),
+                    GestureDetector(
+                      onTap: _cameraCubit.takePicture,
+                      child: const CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 30,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        // Add functionality to switch the camera
+                      },
+                      icon: const Icon(Icons.switch_camera, color: Colors.white, size: 30),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
