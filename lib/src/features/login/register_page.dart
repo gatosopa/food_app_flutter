@@ -3,6 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'components/my_button.dart';
 import 'components/my_textfield.dart';
+import 'package:food_app_flutter/src/core/root_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class RegisterPage extends StatefulWidget {
   final Function()? onTap;
@@ -20,75 +23,80 @@ class _RegisterPageState extends State<RegisterPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  final birthdayController = TextEditingController();
+  final countryController = TextEditingController();
 
+
+void showErrorDialog(String message) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close the dialog
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
+}
   // Sign up method
-  void signUserUp() async {
-    // Check if fields are not empty
-    if (firstNameController.text.trim().isEmpty ||
-        lastNameController.text.trim().isEmpty ||
-        emailController.text.trim().isEmpty ||
-        passwordController.text.trim().isEmpty ||
-        confirmPasswordController.text.trim().isEmpty) {
-      wrongEmailMessage("All fields are required");
-      return;
-    }
+void signUserUp() async {
+  if (passwordController.text != confirmPasswordController.text) {
+    showErrorDialog("Passwords do not match.");
+    return;
+  }
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    },
+  );
+
+  try {
+    UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: emailController.text.trim(),
+      password: passwordController.text.trim(),
     );
 
-    try {
-      if (passwordController.text == confirmPasswordController.text) {
-        Navigator.of(context).pop();
+    // Save user data in Firestore
+    await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+      'first_name': firstNameController.text.trim(),
+      'last_name': lastNameController.text.trim(),
+      'email': emailController.text.trim(),
+      'password': passwordController.text.trim(),
+      'date_of_birth': birthdayController.text.trim(),
+      'country': countryController.text.trim(),
+    });
 
-        // Register the user and get UserCredential
-        UserCredential userCredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
-          email: emailController.text.trim(),
-          password: passwordController.text.trim(),
-        );
+    // Save Firebase user ID to local storage
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('firebaseUserId', userCredential.user!.uid);
 
-        // Use the email as the document ID
-        String email = emailController.text.trim();
-
-        // Save user data to Firestore with email as the document ID
-        await FirebaseFirestore.instance.collection('users').doc(email).set({
-          'first_name': firstNameController.text.trim(),
-          'last_name': lastNameController.text.trim(),
-          'email': email,
-        });
-
-        // Close the loading dialog
-        Navigator.of(context).pop();
-      } else {
-        // Close the loading dialog before showing the error message
-        Navigator.of(context).pop();
-        wrongEmailMessage("Passwords don't match");
-      }
-    } on FirebaseAuthException catch (e) {
-      Navigator.of(context).pop();
-
-      // Handle specific error codes
-      if (e.code == 'weak-password') {
-        wrongEmailMessage("The password provided is too weak.");
-      } else if (e.code == 'email-already-in-use') {
-        wrongEmailMessage("The account already exists for that email.");
-      } else if (e.code == 'invalid-email') {
-        wrongEmailMessage("The email address is not valid.");
-      } else {
-        wrongEmailMessage(e.message ?? "An error occurred.");
-      }
-    } catch (e) {
-      Navigator.of(context).pop();
-      wrongEmailMessage("An unexpected error occurred. Please try again.");
-    }
+    Navigator.pop(context);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const RootPage(),
+      ),
+    );
+  } on FirebaseAuthException catch (e) {
+    Navigator.pop(context);
+    showErrorDialog(e.message ?? 'An error occurred.');
   }
+}
+
+
 
   void wrongEmailMessage(String message) {
     showDialog(

@@ -3,9 +3,11 @@ import 'package:food_app_flutter/src/features/onboarding/onboarding_page.dart';
 import 'src/core/widgets/bottom_navigation_bar.dart';
 import 'src/features/home/home_page.dart';
 import 'src/features/camera/presentation/view/camera_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 
   void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const FoodApp());
 }
 

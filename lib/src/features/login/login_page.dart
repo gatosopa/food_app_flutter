@@ -4,6 +4,8 @@ import 'components/my_textfield.dart';
 import 'components/square_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'forgotPassword_page.dart';
+import 'package:food_app_flutter/src/core/root_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   final Function()? onTap;
@@ -20,32 +22,64 @@ class _LoginPageState extends State<LoginPage> {
 
   final passwordController = TextEditingController();
 
-  // sign user in method
-  void signUserIn() async {
-    showDialog(context: context,
+void showErrorDialog(String message) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close the dialog
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
+void signUserIn() async {
+  showDialog(
+    context: context,
     builder: (context) {
       return const Center(
         child: CircularProgressIndicator(),
       );
     },
+  );
+
+  try {
+    UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: emailController.text.trim(),
+      password: passwordController.text.trim(),
     );
 
-    try {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-      Navigator.pop(context);
+    // Save Firebase user ID to local storage
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('firebaseUserId', userCredential.user!.uid);
 
-    } on FirebaseAuthException catch(e){
-      print("ECODE HERE" + e.code);
-      Navigator.pop(context);
-      if (e.code == 'invalid-credential'){
-        wrongEmailMessage();
-      }
-    }
+    // Close the loading dialog
+    Navigator.pop(context);
 
+    // Navigate to HomePage
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const RootPage(),
+      ),
+    );
+  } on FirebaseAuthException catch (e) {
+    Navigator.pop(context);
+    showErrorDialog(e.message ?? 'An error occurred.');
   }
+}
+
+
 
   void wrongEmailMessage(){
     showDialog(
