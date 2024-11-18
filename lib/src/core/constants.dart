@@ -16,5 +16,8 @@ class Constants {
  static var titleThree = "Set Preferences";
  static var descriptionThree = "Choose your favorite dishes so we can provide you with one!";
 
- 
+ static var tProfile = "Profile";
+ static var profilePhoto = "assets/image/pasta.jpg";
+ static var tEditProfile = "Edit Profile";
+ static var tEditProfileDone = "Save Changes"; 
 }
