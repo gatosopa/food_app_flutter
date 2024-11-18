@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "906299322487",
+    "project_id": "foodie-51699",
+    "storage_bucket": "foodie-51699.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:906299322487:android:66552d14b558663e0c1672",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqUEj6kSVSuJdplmjsaWQ15LWMhff0Qo4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:906299322487:android:55d469cc3ca5ac920c1672",
+        "android_client_info": {
+          "package_name": "com.example.food_app_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqUEj6kSVSuJdplmjsaWQ15LWMhff0Qo4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

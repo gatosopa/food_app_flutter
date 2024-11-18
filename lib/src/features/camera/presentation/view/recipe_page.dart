@@ -14,13 +14,20 @@ class RecipePage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Recipes'),
       ),
-      body: ListView.builder(
-        itemCount: recipes.length,
-        itemBuilder: (context, index) {
-          final recipe = recipes[index];
-          return RecipeCard(recipe: recipe);
-        },
-      ),
+      body: recipes.isEmpty
+          ? Center(
+              child: Text(
+                'No recipes available',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            )
+          : ListView.builder(
+              itemCount: recipes.length,
+              itemBuilder: (context, index) {
+                final recipe = recipes[index];
+                return RecipeCard(recipe: recipe);
+              },
+            ),
     );
   }
 }

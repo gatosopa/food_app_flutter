@@ -26,7 +26,7 @@ class Categories extends StatelessWidget {
             margin: EdgeInsets.only(left: index== 0 ? 20: 0, right : index== categories.length-1? 20 : 10),
             child: Text(categories[index],
             style: TextStyle(
-              color: currentCat == categories[index]? Constants.secondaryColoer : Colors.black
+              color: currentCat == categories[index]? Constants.secondaryColor : Colors.black
             )),
           ),
         ),

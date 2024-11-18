@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:food_app_flutter/src/features/onboarding/onboarding_page.dart';
-import 'src/core/widgets/bottom_navigation_bar.dart';
-import 'src/features/home/home_page.dart';
-import 'src/features/camera/presentation/view/camera_page.dart';
+import 'package:food_app_flutter/src/core/root_page.dart';
 
-  void main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const FoodApp());
 }
 
@@ -14,43 +16,51 @@ class FoodApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
-      title: 'Onboarding Screen',
-      home: OnboardingScreen(),
+    return MaterialApp(
+      title: 'Food App',
+      home: const RootDecider(), // RootDecider decides where to navigate
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+class RootDecider extends StatefulWidget {
+  const RootDecider({super.key});
 
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  State<RootDecider> createState() => _RootDeciderState();
 }
 
-class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 0;
+class _RootDeciderState extends State<RootDecider> {
+  bool? _isLoggedIn;
 
-  final List<Widget> _pages = <Widget>[
-    const HomePage(),
-    const CameraPage(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
 
-  void _onItemTapped(int index) {
+  Future<void> _checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Check if the user is logged in or if they have completed onboarding
+    bool hasSeenOnboarding = prefs.getBool('hasSeenOnboarding') ?? false;
+    User? currentUser = FirebaseAuth.instance.currentUser;
+
     setState(() {
-      _currentIndex = index;
+      // If the user is logged in, bypass onboarding
+      _isLoggedIn = currentUser != null || hasSeenOnboarding;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_currentIndex],
-      bottomNavigationBar: CustomBottomNavigationBar(
-        selectedIndex: _currentIndex,
-        onItemTapped: _onItemTapped,
-      ),
-    );
+    if (_isLoggedIn == null) {
+      // Show loading indicator while checking login status
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    // Navigate based on login status
+    return _isLoggedIn! ? const RootPage() : const OnboardingScreen();
   }
 }

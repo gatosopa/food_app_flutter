@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:camera/camera.dart';
@@ -6,10 +7,7 @@ import 'camera_view.dart';
 import '../viewmodel/camera_cubit.dart';
 import '../../data/repositories/camera_repository.dart';
 import 'editable_page.dart';
-import '../viewmodel/camera_state.dart'; // Adjust path as needed
-import 'dart:convert';
-
-
+import '../viewmodel/camera_state.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({Key? key}) : super(key: key);
@@ -30,25 +28,62 @@ class _CameraPageState extends State<CameraPage> {
 
   Future<void> _initializeCamera() async {
     await _cameraCubit.initializeCamera();
-    if (!mounted) return;
     setState(() {});
   }
-
-Future<void> _uploadImage() async {
-  File? image = _cameraCubit.capturedImage != null
-      ? File(_cameraCubit.capturedImage!.path)
-      : _cameraCubit.galleryImage;
-
-  if (image != null) {
-    await _cameraCubit.uploadImage(image);
-  }
-}
-
 
   @override
   void dispose() {
     _cameraCubit.close();
     super.dispose();
+  }
+
+  void _showImagePopup(BuildContext parentContext, File imageFile) {
+    showDialog(
+      context: parentContext,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Display the image
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.file(
+                  imageFile,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // Upload Button
+              ElevatedButton.icon(
+                onPressed: () async {
+                  Navigator.of(context).pop(); // Close the popup
+                  await _cameraCubit.uploadImage(imageFile);
+                  ScaffoldMessenger.of(parentContext).showSnackBar(
+                    const SnackBar(content: Text('Image uploaded successfully!')),
+                  );
+                },
+                icon: const Icon(Icons.upload, color: Colors.white),
+                label: const Text('Upload Image'),
+                style: ElevatedButton.styleFrom(
+                  textStyle: const TextStyle(color: Colors.white),
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 10),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -62,59 +97,89 @@ Future<void> _uploadImage() async {
     }
 
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Camera and Gallery'),
+        backgroundColor: Colors.black, // Black background for the app bar
+        elevation: 0, // Remove the app bar shadow
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 8.0, top: 5.0), // Adjust position
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.red, size: 28), // Red back arrow
+            onPressed: () {
+              Navigator.pop(context); // Navigate back
+            },
+          ),
+        ),
       ),
       body: BlocProvider(
         create: (_) => _cameraCubit,
         child: BlocListener<CameraCubit, CameraState>(
-  listener: (context, state) {
-    if (state is CameraUploadCompleted) {
-      // Print the response to verify its structure
-      print('CameraUploadCompleted response: ${state.response}');
-      
-      // Access the ingredients list within the nested 'message' key
-      final ingredients = state.response != null &&
-                         state.response['message'] != null &&
-                         state.response['message']['ingredients'] != null
-          ? state.response['message']['ingredients']
-          : []; // Default to an empty list if any key is missing
-
-      final response = {'ingredients': ingredients}; // Structure data for EditablePage
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => EditablePage(
-            jsonData: jsonEncode(response),
+          listener: (context, state) {
+            if (state is CameraImageSelected) {
+              _showImagePopup(context, state.image);
+            } else if (state is CameraUploadCompleted) {
+              // Debugging: Log the response
+              print('CameraUploadCompleted: ${state.response}');
+              // Check if 'ingredients' exist in response
+              final ingredients = state.response['ingredients'] ?? [];
+              if (ingredients.isEmpty) {
+                print('No ingredients found in response.');
+              }
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditablePage(
+                    jsonData: jsonEncode(state.response),
+                  ),
+                ),
+              );
+            } else if (state is CameraError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message)),
+              );
+            }
+          },
+          child: Column(
+            children: [
+              // Camera view
+              Expanded(
+                child: CameraView(
+                  cameraPreview: CameraPreview(_cameraCubit.controller!),
+                  onTakePicture: _cameraCubit.takePicture,
+                  onPickImage: _cameraCubit.pickImageFromGallery,
+                ),
+              ),
+              // Bottom black bar with camera and gallery buttons
+              Container(
+                color: Colors.black,
+                height: 80,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      onPressed: _cameraCubit.pickImageFromGallery,
+                      icon: const Icon(Icons.image, color: Colors.white, size: 30),
+                    ),
+                    GestureDetector(
+                      onTap: _cameraCubit.takePicture,
+                      child: const CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 30,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        // Add functionality to switch the camera
+                      },
+                      icon: const Icon(Icons.switch_camera, color: Colors.white, size: 30),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
-      );
-    } else if (state is CameraError) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(state.message)),
-      );
-    }
-  },
-  child: CameraView(
-    cameraPreview: _cameraCubit.controller != null
-        ? CameraPreview(_cameraCubit.controller!)
-        : const SizedBox(),
-    capturedImage: _cameraCubit.capturedImage != null
-        ? File(_cameraCubit.capturedImage!.path)
-        : null,
-    galleryImage: _cameraCubit.galleryImage,
-    onTakePicture: () async {
-      await _cameraCubit.takePicture();
-      if (mounted) setState(() {});
-    },
-    onPickImage: () async {
-      await _cameraCubit.pickImageFromGallery();
-      if (mounted) setState(() {});
-    },
-    onUploadImage: _uploadImage,
-  ),
-)
-      ));
+      ),
+    );
   }
 }

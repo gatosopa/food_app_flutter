@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:food_app_flutter/src/core/constants.dart';
 import 'package:food_app_flutter/src/core/root_page.dart';
+import 'package:food_app_flutter/src/features/onboarding/login_signup.dart';
 
 
 class OnboardingScreen extends StatefulWidget {
@@ -27,7 +28,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             padding: const EdgeInsets.only(right: 20, top: 20),
             child: InkWell(
               onTap: (){//route to log in screen
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const RootPage()));
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginSignup()));
               }, 
               child: const Text('Skip', style: TextStyle(
                 color: Colors.grey,
@@ -91,7 +92,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
                         }
                       }else{
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const RootPage()));
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginSignup()));
                       }
                     });
                   }, 

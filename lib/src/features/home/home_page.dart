@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage> {
               ),
               title: Text('F O O D I E',
                 style: TextStyle(
-                  color: Constants.secondaryColoer,
+                  color: Constants.secondaryColor,
                   fontWeight: FontWeight.w500
                 ),),
               centerTitle: true,
