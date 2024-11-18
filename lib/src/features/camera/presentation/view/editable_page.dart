@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../core/constants.dart';
 import 'recipe_page.dart';
 
@@ -14,13 +15,14 @@ class EditablePage extends StatefulWidget {
 }
 
 class _EditablePageState extends State<EditablePage> {
-  final String _userId = "piol"; // Hardcoded userId for testing
+  String? _userId; // User ID from Firebase
   List<TextEditingController> _controllers = [];
   final Dio _dio = Dio();
 
   @override
   void initState() {
     super.initState();
+    _fetchUserId(); // Fetch the Firebase user ID
     print('EditablePage received jsonData: ${widget.jsonData}');
     try {
       final data = jsonDecode(widget.jsonData);
@@ -33,8 +35,18 @@ class _EditablePageState extends State<EditablePage> {
     }
   }
 
-
-
+  Future<void> _fetchUserId() async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        setState(() {
+          _userId = currentUser.uid; // Assign the user ID
+        });
+      }
+    } catch (e) {
+      print('Error fetching user ID: $e');
+    }
+  }
 
   @override
   void dispose() {
@@ -51,7 +63,7 @@ class _EditablePageState extends State<EditablePage> {
     }).toList();
 
     final updatedData = {
-      'user_id': _userId, // Hardcoded userId for testing
+      'user_id': _userId, // Use Firebase user ID
       'ingredients': updatedIngredients,
     };
     return jsonEncode(updatedData);
@@ -59,46 +71,45 @@ class _EditablePageState extends State<EditablePage> {
 
   // Function to send edited data to the server
   Future<void> sendEditedData() async {
-  try {
-    final editedJson = getEditedJson();
-    final decodedData = jsonDecode(editedJson);
+    try {
+      final editedJson = getEditedJson();
+      final decodedData = jsonDecode(editedJson);
 
-    final response = await _dio.post(
-      '${Constants.serverIP}/submit_json', // Replace with your server endpoint
-      data: decodedData, // Packaged in the updated JSON format
-    );
-
-    // Log the full server response
-    print("Server Response: ${response.data}");
-
-    if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Data sent successfully!")),
+      final response = await _dio.post(
+        '${Constants.serverIP}/submit_json', // Replace with your server endpoint
+        data: decodedData, // Packaged in the updated JSON format
       );
 
-      // Assuming the server response contains the recipe JSON data
-      final jsonResponseFromServer = response.data; // Adjust as necessary if the data is wrapped
+      // Log the full server response
+      print("Server Response: ${response.data}");
 
-      // Navigate to RecipePage with the received JSON
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => RecipePage(jsonData: jsonEncode(jsonResponseFromServer)),
-        ),
-      );
-    } else {
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Data sent successfully!")),
+        );
+
+        // Assuming the server response contains the recipe JSON data
+        final jsonResponseFromServer = response.data; // Adjust as necessary if the data is wrapped
+
+        // Navigate to RecipePage with the received JSON
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RecipePage(jsonData: jsonEncode(jsonResponseFromServer)),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to send data.")),
+        );
+      }
+    } catch (e) {
+      print("Error sending data: $e"); // Log the error
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to send data.")),
+        SnackBar(content: Text("Error sending data: $e")),
       );
     }
-  } catch (e) {
-    print("Error sending data: $e"); // Log the error
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Error sending data: $e")),
-    );
   }
-}
-
 
   // Submit function now includes sending the data to the server
   void _submit() {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'components/my_button.dart';
 import 'components/my_textfield.dart';
-import 'components/square_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'forgotPassword_page.dart';
 import 'package:food_app_flutter/src/core/root_page.dart';

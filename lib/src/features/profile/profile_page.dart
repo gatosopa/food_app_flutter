@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:food_app_flutter/src/features/profile/edit_profile_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:food_app_flutter/src/core/constants.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:food_app_flutter/src/features/onboarding/onboarding_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -50,6 +52,62 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  Future<void> _logout(BuildContext context) async {
+    // Confirm the logout action
+    bool? shouldLogout = await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Logout'),
+          content: const Text('Are you sure you want to log out?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldLogout ?? false) {
+      try {
+        // Perform the logout
+        await FirebaseAuth.instance.signOut();
+
+        // Clear locally stored data
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.clear();
+
+        // Navigate back to the onboarding screen
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const OnboardingScreen()),
+          (route) => false, // Remove all previous routes
+        );
+      } catch (e) {
+        // Handle logout error
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Error'),
+            content: Text(e.toString()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,6 +116,13 @@ class _ProfilePageState extends State<ProfilePage> {
           Constants.tProfile,
           style: Theme.of(context).textTheme.titleMedium,
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => _logout(context),
+            tooltip: 'Logout',
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
