@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:food_app_flutter/src/core/constants.dart';
 import 'package:food_app_flutter/src/core/containers/section_heading.dart';
+import 'package:food_app_flutter/src/core/widgets/food_card.dart';
+import 'package:food_app_flutter/src/features/favorites/my_preferences_page.dart';
+import 'package:food_app_flutter/src/features/favorites/widgets/my_preferences.dart';
+import 'package:food_app_flutter/src/models/food.dart';
+import 'package:page_transition/page_transition.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -13,6 +18,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final List<Food> _foodList = Food.foodList;
 
     return Scaffold(
       backgroundColor: Constants.backgroundColor,
@@ -21,106 +27,81 @@ class _FavoritesPageState extends State<FavoritesPage> {
         elevation: 0.0,
         title: Padding(
           padding: const EdgeInsets.only(left: 10),
-          child: Text("Favorites", style: TextStyle(
+          child: Text("Account", style: TextStyle(
             fontWeight: FontWeight.w600,
             color: Colors.black,
             fontSize: 30
           ),),
-        ),
-        
+        ),   
       ),
-      body: NestedScrollView(headerSliverBuilder: (_, innerBoxIsScrolled){
-        return [
-          SliverAppBar(
-            pinned: true,
-            floating: true,
-            expandedHeight: 440,
-
-            flexibleSpace: Padding(
-              padding: EdgeInsets.all(20),
-              child: ListView(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-
-                   Padding( //Search box
-                      padding: const EdgeInsets.only(top: 0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Container( //Actual Search Box
-                            
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0,
-                            ),
-                            width: size.width * .9,
-                            
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(17),
-                            
-                            ),
-
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.search, color:Colors.black54.withOpacity(.6),),
-                                SizedBox(
-                                  width:20
-                                ),
-                                const Expanded(
-                                  
-                                  child: TextField(
-                                    showCursor: false,
-                                    decoration: InputDecoration(
-                                      hintText: 'Search Your Favorite Recipes',
-                                      border: InputBorder.none,
-                                      focusedBorder: InputBorder.none,
-                                    ),
-                                  ),
-                                ),
-                                Icon(Icons.mic, color: Colors.black54.withOpacity(.6),),
-                              ],
-                            ),
-
-                          )
-                        ],
-                      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding:const EdgeInsets.all(15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(6.0),
+                  child: GestureDetector(
+                    onTap: (){
+                      Navigator.push(context, PageTransition(child: MypreferencesPage(), type: PageTransitionType.bottomToTop));
+                    },
+                    child: MyPreferences()
                     ),
-                  SizedBox(height: 16,), //End of Search box
-
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 0),
-                          child: Text(
-                            "Favorite Recipes",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
+                ),
+                const SizedBox(height: 16,),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 7.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'My Favorites',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
-                        Padding(
-                          padding: EdgeInsets.only(right: 0),
-                          child: TextButton(
-                          onPressed: (){}, 
-                          child: 
-                            Text("View All", style: TextStyle(color: Constants.primaryColor,)),
+                      ),
+                      TextButton(
+                        onPressed: (){
+
+                        },
+                        child: Text(
+                          'View All',
+                          style: TextStyle(
+                            color: Constants.primaryColor
+                            
                           ),
-                        ),
-                      ],),
-
-                  const SizedBox (height: 8,)
-
-                ],
-              ),
-            ),
-          )
-        ];
-      }, body: Container())
+                        )
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(),
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 20,
+                      mainAxisSpacing: 20,
+                    ),
+                    itemCount: _foodList.length,
+                    itemBuilder: (context, index) {
+                      final food = _foodList[index];
+                      return FoodCard(food : food);
+                    }
+                            
+                  ),
+                ),
+              ],
+            )
+          ),
+        ),
+      ),
     );
   }
 }
