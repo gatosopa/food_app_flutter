@@ -171,7 +171,7 @@ class _CameraPageState extends State<CameraPage> {
                       onPressed: () {
                         // Add functionality to switch the camera
                       },
-                      icon: const Icon(Icons.switch_camera, color: Colors.white, size: 30),
+                      icon: const Icon(Icons.switch_camera, color: Colors.black, size: 30),
                     ),
                   ],
                 ),

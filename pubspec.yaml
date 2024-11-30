@@ -50,6 +50,7 @@ dependencies:
   cached_network_image: ^3.4.1
   cloud_firestore: ^5.5.0
   shared_preferences: ^2.3.3
+  firebase_storage: ^12.3.6
 
 dev_dependencies:
   flutter_test:

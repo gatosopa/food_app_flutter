@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:food_app_flutter/src/features/profile/edit_profile_page.dart';
@@ -5,6 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:food_app_flutter/src/core/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:food_app_flutter/src/features/onboarding/onboarding_page.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -18,11 +21,13 @@ class _ProfilePageState extends State<ProfilePage> {
   String email = "Loading...";
   String dateOfBirth = "Loading...";
   String country = "Loading...";
+  File? profileImage;
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
+    _loadProfileImage();
   }
 
   Future<void> _loadUserData() async {
@@ -31,8 +36,10 @@ class _ProfilePageState extends State<ProfilePage> {
       String? userId = prefs.getString('firebaseUserId');
 
       if (userId != null) {
-        DocumentSnapshot userDoc =
-            await FirebaseFirestore.instance.collection('users').doc(userId).get();
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .get();
 
         if (userDoc.exists) {
           setState(() {
@@ -52,8 +59,23 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  Future<void> _loadProfileImage() async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final profileImagePath = path.join(directory.path, 'profile_image.png');
+      final file = File(profileImagePath);
+
+      if (await file.exists()) {
+        setState(() {
+          profileImage = file;
+        });
+      }
+    } catch (e) {
+      print("Error loading profile image: $e");
+    }
+  }
+
   Future<void> _logout(BuildContext context) async {
-    // Confirm the logout action
     bool? shouldLogout = await showDialog(
       context: context,
       builder: (context) {
@@ -76,21 +98,16 @@ class _ProfilePageState extends State<ProfilePage> {
 
     if (shouldLogout ?? false) {
       try {
-        // Perform the logout
         await FirebaseAuth.instance.signOut();
-
-        // Clear locally stored data
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.clear();
 
-        // Navigate back to the onboarding screen
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const OnboardingScreen()),
-          (route) => false, // Remove all previous routes
+          (route) => false,
         );
       } catch (e) {
-        // Handle logout error
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -131,15 +148,34 @@ class _ProfilePageState extends State<ProfilePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Profile Picture
-              SizedBox(
-                width: 120,
-                height: 120,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100),
-                  child: Image.asset(
-                    Constants.profilePhoto,
-                    fit: BoxFit.cover,
-                  ),
+              GestureDetector(
+                onTap: () async {
+                  final updatedInfo = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditProfilePage(
+                        username: username,
+                        email: email,
+                        birthday: dateOfBirth,
+                        country: country,
+                      ),
+                    ),
+                  );
+
+                  if (updatedInfo != null) {
+                    _loadProfileImage(); // Reload profile image after edit
+                  }
+                },
+                child: CircleAvatar(
+                  radius: 60,
+                  backgroundImage:
+                      profileImage != null ? FileImage(profileImage!) : AssetImage(Constants.defaultProfilePhoto) as ImageProvider,
+                  child: profileImage == null
+                      ? const Icon(
+                          Icons.camera_alt,
+                          size: 50,
+                        )
+                      : null,
                 ),
               ),
               const SizedBox(height: 20),
@@ -206,7 +242,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         dateOfBirth = updatedInfo['birthday'] ?? dateOfBirth;
                         country = updatedInfo['country'] ?? country;
                       });
-                      // Optionally update Firestore here
+                      _loadProfileImage(); // Reload profile image after edit
                     }
                   },
                   child: Text(

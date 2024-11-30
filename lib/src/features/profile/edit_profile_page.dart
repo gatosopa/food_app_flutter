@@ -1,6 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 
 class EditProfilePage extends StatefulWidget {
   final String username;
@@ -26,49 +30,46 @@ class _EditProfilePageState extends State<EditProfilePage> {
   late TextEditingController birthdayController;
   late TextEditingController countryController;
   late TextEditingController passwordController;
-  bool isPasswordVisible = false; // To toggle password visibility
+  bool isPasswordVisible = false;
+
+  File? _profileImage;
 
   @override
   void initState() {
     super.initState();
-    // Initialize controllers with passed data
     usernameController = TextEditingController(text: widget.username);
     emailController = TextEditingController(text: widget.email);
     birthdayController = TextEditingController(text: widget.birthday);
     countryController = TextEditingController(text: widget.country);
     passwordController = TextEditingController();
-
-    _fetchPassword(); // Fetch the real password from Firestore
+    _loadProfileImage();
   }
 
-  Future<void> _fetchPassword() async {
-    try {
-      final currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser != null) {
-        DocumentSnapshot userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(currentUser.uid)
-            .get();
+  Future<void> _loadProfileImage() async {
+    final directory = await getApplicationDocumentsDirectory();
+    final profileImagePath = path.join(directory.path, 'profile_image.png');
+    final file = File(profileImagePath);
 
-        if (userDoc.exists) {
-          setState(() {
-            passwordController.text = userDoc['password'] ?? '';
-          });
-        }
-      }
-    } catch (e) {
-      print("Error fetching password: $e");
+    if (await file.exists()) {
+      setState(() {
+        _profileImage = file;
+      });
     }
   }
 
-  @override
-  void dispose() {
-    usernameController.dispose();
-    emailController.dispose();
-    birthdayController.dispose();
-    countryController.dispose();
-    passwordController.dispose();
-    super.dispose();
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      final directory = await getApplicationDocumentsDirectory();
+      final profileImagePath = path.join(directory.path, 'profile_image.png');
+      final newImage = File(pickedFile.path).copySync(profileImagePath);
+
+      setState(() {
+        _profileImage = newImage;
+      });
+    }
   }
 
   Future<void> _saveChanges() async {
@@ -76,20 +77,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
       final currentUser = FirebaseAuth.instance.currentUser;
 
       if (currentUser != null) {
-        // Update the email in Firebase Auth if it has changed
         if (emailController.text.trim() != widget.email) {
           await currentUser.updateEmail(emailController.text.trim());
         }
 
-        // Update the password in Firebase Auth if it has been changed
         if (passwordController.text.trim().isNotEmpty) {
           await currentUser.updatePassword(passwordController.text.trim());
         }
 
-        // Update Firestore document
         await FirebaseFirestore.instance.collection('users').doc(currentUser.uid).update({
           'first_name': usernameController.text.trim().split(' ').first,
-          'last_name': usernameController.text.trim().split(' ').length > 1 ? usernameController.text.trim().split(' ').sublist(1).join(' ') : '',
+          'last_name': usernameController.text.trim().split(' ').length > 1
+              ? usernameController.text.trim().split(' ').sublist(1).join(' ')
+              : '',
           'email': emailController.text.trim(),
           'password': passwordController.text.trim(),
           'date_of_birth': birthdayController.text.trim(),
@@ -97,7 +97,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
         });
       }
 
-      // Return updated data to ProfilePage
       Navigator.pop(context, {
         'username': usernameController.text.trim(),
         'email': emailController.text.trim(),
@@ -105,7 +104,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
         'country': countryController.text.trim(),
       });
     } catch (e) {
-      // Show an error dialog if updating fails
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -132,7 +130,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Username
+            GestureDetector(
+              onTap: _pickImage,
+              child: CircleAvatar(
+                radius: 60,
+                backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
+                child: _profileImage == null
+                    ? const Icon(
+                        Icons.camera_alt,
+                        size: 50,
+                      )
+                    : null,
+              ),
+            ),
+            const SizedBox(height: 20),
             TextField(
               controller: usernameController,
               decoration: const InputDecoration(
@@ -142,7 +153,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
             ),
             const SizedBox(height: 15),
-            // Email
             TextField(
               controller: emailController,
               decoration: const InputDecoration(
@@ -152,10 +162,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
             ),
             const SizedBox(height: 15),
-            // Password
             TextField(
               controller: passwordController,
-              obscureText: !isPasswordVisible, // Toggle visibility
+              obscureText: !isPasswordVisible, // Toggle visibility based on the state
               decoration: InputDecoration(
                 labelText: 'Password',
                 prefixIcon: const Icon(Icons.lock),
@@ -173,7 +182,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
             ),
             const SizedBox(height: 15),
-            // Birthday
             TextField(
               controller: birthdayController,
               decoration: const InputDecoration(
@@ -197,7 +205,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
               },
             ),
             const SizedBox(height: 15),
-            // Country
             TextField(
               controller: countryController,
               decoration: const InputDecoration(
@@ -209,10 +216,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             const SizedBox(height: 30),
             ElevatedButton(
               onPressed: _saveChanges,
-              child: const Text(
-                'Save Changes',
-                style: TextStyle(color: Colors.white),
-              ),
+              child: const Text('Save Changes', style: TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 shape: const StadiumBorder(),
