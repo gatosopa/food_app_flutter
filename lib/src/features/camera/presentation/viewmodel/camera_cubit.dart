@@ -6,6 +6,9 @@ import 'camera_state.dart';
 import 'package:gal/gal.dart';
 import 'package:image_picker/image_picker.dart';
 
+// Add a new state for uploading
+class CameraUploading extends CameraState {}
+
 class CameraCubit extends Cubit<CameraState> {
   final CameraRepository cameraRepository;
   CameraController? _controller;
@@ -65,18 +68,17 @@ class CameraCubit extends Cubit<CameraState> {
   // Upload the image to the server
   Future<void> uploadImage(File image) async {
     try {
+      // Emit the uploading state
+      emit(CameraUploading());
+      
       final response = await cameraRepository.uploadImage(image);
 
-      // Debugging: Log the response
-      print('Upload response: $response');
-
-      // Ensure 'response' is passed as a Map
+      // Emit the upload completed state
       emit(CameraUploadCompleted(response));
     } catch (e) {
       emit(CameraError('Failed to upload image: $e'));
     }
   }
-
 
   @override
   Future<void> close() {

@@ -117,7 +117,16 @@ class _CameraPageState extends State<CameraPage> {
           listener: (context, state) {
             if (state is CameraImageSelected) {
               _showImagePopup(context, state.image);
-            } else if (state is CameraUploadCompleted) {
+            } else if (state is CameraUploading) {
+              // Show a loading dialog
+              showDialog(
+                context: context,
+                builder: (context) => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+              else if (state is CameraUploadCompleted) {
               // Debugging: Log the response
               print('CameraUploadCompleted: ${state.response}');
               // Check if 'ingredients' exist in response
