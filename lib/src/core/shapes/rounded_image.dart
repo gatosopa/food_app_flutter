@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_app_flutter/src/core/constants.dart';
-import 'package:food_app_flutter/src/core/detail_page.dart';
+import 'package:food_app_flutter/src/features/recipe/detail_page.dart';
 import 'package:food_app_flutter/src/models/food.dart';
 import 'package:page_transition/page_transition.dart';
 

@@ -3,45 +3,32 @@ import 'package:food_app_flutter/src/core/constants.dart';
 import 'package:food_app_flutter/src/features/login/login_page.dart';
 import 'package:food_app_flutter/src/features/login/register_page.dart';
 
-class LoginSignup extends StatefulWidget {
+class LoginSignup extends StatelessWidget {
   const LoginSignup({super.key});
 
   @override
-  State<LoginSignup> createState() => _LoginSignupState();
-}
-
-class _LoginSignupState extends State<LoginSignup> {
-  bool showLoginPage = true;
-  void togglePages(){
-    setState(() {
-      showLoginPage = !showLoginPage;
-    });
-  }
-   @override
-    Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Constants.primaryColor, // Background color
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-    
             Container(
-              
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white, // Circle background
                 shape: BoxShape.circle,
               ),
               child: Center(
-                child: Image.asset('assets/image/foodie_logo.png',
+                child: Image.asset(
+                  'assets/image/foodie_logo.png',
                   width: 300,
                   height: 300,
-                  ),
-                
+                ),
               ),
             ),
             const SizedBox(height: 20), // Space between circle and text
-            Text(
+            const Text(
               'Start your cooking journey with \n Foodie now!',
               style: TextStyle(
                 color: Colors.white,
@@ -57,10 +44,22 @@ class _LoginSignupState extends State<LoginSignup> {
               width: 200,
               child: ElevatedButton(
                 onPressed: () {
-                  // Log in action
-                  setState(() {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => LoginPage(onTap: togglePages,)));
-                  });
+                  // Navigate to LoginPage
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LoginPage(
+                        onTap: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => RegisterPage(onTap: null),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Constants.secondaryColor, // Button background color
@@ -68,9 +67,9 @@ class _LoginSignupState extends State<LoginSignup> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30), // Rounded corners
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 14),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                child: Text(
+                child: const Text(
                   'Log In',
                   style: TextStyle(fontSize: 18),
                 ),
@@ -84,9 +83,22 @@ class _LoginSignupState extends State<LoginSignup> {
               width: 200,
               child: ElevatedButton(
                 onPressed: () {
-                  setState(() {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => RegisterPage(onTap: togglePages,)));
-                  });
+                  // Navigate to RegisterPage
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => RegisterPage(
+                        onTap: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => LoginPage(onTap: null),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Constants.secondaryColor, // Button background color
@@ -94,9 +106,9 @@ class _LoginSignupState extends State<LoginSignup> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 14),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                child: Text(
+                child: const Text(
                   'Sign Up',
                   style: TextStyle(fontSize: 18),
                 ),

@@ -1,12 +1,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:food_app_flutter/src/core/constants.dart';
+import 'package:food_app_flutter/src/features/home/recipe_view_all_page.dart';
 import 'package:food_app_flutter/src/features/home/widgets/categories.dart';
 import 'package:food_app_flutter/src/features/home/widgets/food_slider.dart';
 import 'package:food_app_flutter/src/models/cuisine.dart';
 import 'package:food_app_flutter/src/models/food.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:food_app_flutter/src/core/containers/section_heading.dart';
+import 'package:page_transition/page_transition.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,11 +20,74 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+    
+    List<Food> _foodList = [];
+    List<Food> filteredFoodList = []; 
+    String selectedCategory = categories[0]; //default
+
+
+    //Load food recipe
+    @override
+    void initState() {
+      super.initState();
+      _foodList = Food.foodList;
+      _filterFoodList();
+    }
+
+    //Filter food recipe mechanism
+    void _filterFoodList(){
+      setState(() {
+        if (selectedCategory == 'All'){
+          //Show all food
+          filteredFoodList = List.from(_foodList);
+        }
+        else{
+          filteredFoodList =_foodList.where((food) {
+          if (selectedCategory == 'Cheap'){
+            return food.isCheap == true;
+          }
+          else if (selectedCategory == 'Dairy Free'){
+            return food.isDairyFree == true;
+          }
+          else if (selectedCategory == 'Gluten Free') {
+            return food.isGlutenFree == true;
+          } 
+          else if (selectedCategory == 'Ketogenic') {
+            return food.isKetogenic == true;
+          } 
+          else if (selectedCategory == 'Sustainable') {
+            return food.isSustainable == true;
+          } 
+          else if (selectedCategory == 'Vegan') {
+            return food.isVegan == true;
+          } 
+          else if (selectedCategory == 'Vegetarian') {
+            return food.isVegetarian == true;
+          } 
+          else if (selectedCategory == 'Healthy') {
+            return food.isHealthy == true;
+          } 
+          else if (selectedCategory == 'Popular') {
+            return food.isPopular == true;
+          }
+          return false;
+        }).toList();
+        }
+      });
+      print('Filtered food list: $filteredFoodList');  // Debugging
+    }
+
+    //Callback function for category
+    void _onCategorySelected(String category){
+      setState(() {
+        selectedCategory = category;
+      });
+      _filterFoodList();
+    }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    List<Food> _foodList = Food.foodList;
-    String currentCat = "All";
 
     return Scaffold(
       backgroundColor: Constants.backgroundColor,
@@ -134,7 +199,10 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
-                    Categories(currentCat: currentCat),
+                    Categories(
+                      currentCat: selectedCategory,
+                      onCategorySelected: _onCategorySelected,
+                    ),
                     
                     const SizedBox(height: 20),
                     Row(
@@ -153,8 +221,10 @@ class _HomePageState extends State<HomePage> {
                         Padding(
                           padding: EdgeInsets.only(right: 20),
                           child: TextButton(
-                          onPressed: (){}, 
-                          child: 
+                            onPressed: (){
+                              Navigator.push(context, PageTransition(child: RecipeViewallPage(foodList : filteredFoodList), type: PageTransitionType.rightToLeft));
+                            }, 
+                            child: 
                             Text("View All", style: TextStyle(color: Constants.primaryColor,)),
                           ),
                         ),
@@ -163,7 +233,8 @@ class _HomePageState extends State<HomePage> {
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
-                        children: List.generate(_foodList.length, (index) => 
+                        children: filteredFoodList.isEmpty? [Center(child: Text('No recipe found for this category!'),)] : 
+                        List.generate(filteredFoodList.length, (index) => 
                         
                         Container(
                           margin: EdgeInsets.only(left: index== 0 ? 20: 0, right : index== _foodList.length-1? 20 : 10),
@@ -178,11 +249,11 @@ class _HomePageState extends State<HomePage> {
                                     height: 130,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(15),
-                                      image: DecorationImage(image: AssetImage(_foodList[index].imageUrl), fit: BoxFit.cover)
+                                      image: DecorationImage(image: AssetImage(filteredFoodList[index].imageUrl), fit: BoxFit.cover)
                                     ),
                                   ),
                                   const SizedBox (height: 8),
-                                  Text(_foodList[index].foodName, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
+                                  Text(filteredFoodList[index].foodName, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
                                   const SizedBox (height: 5),
 
                                   Row(
@@ -191,7 +262,7 @@ class _HomePageState extends State<HomePage> {
                                         Iconsax.flash_1,
                                         size: 18,
                                         color: Colors.grey),
-                                      Text("${_foodList[index].foodCalories} Cal", style: TextStyle(fontSize: 12, color: Colors.grey),),
+                                      Text("${filteredFoodList[index].foodCalories} Cal", style: TextStyle(fontSize: 12, color: Colors.grey),),
                                     ],
                                   )
                                 ],
@@ -208,7 +279,7 @@ class _HomePageState extends State<HomePage> {
                                       backgroundColor: Colors.white,
                                       fixedSize: const Size(30,30)
                                     ),
-                                    icon: Icon(_foodList[index].isFavorated == true ? Icons.favorite : Icons.favorite_border, color: Constants.primaryColor,),
+                                    icon: Icon(filteredFoodList[index].isFavorated == true ? Icons.favorite : Icons.favorite_border, color: Constants.primaryColor,),
                                     color: Constants.primaryColor,
                                     iconSize: 20,
                                   ),

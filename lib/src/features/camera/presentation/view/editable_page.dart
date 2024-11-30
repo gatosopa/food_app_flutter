@@ -6,7 +6,7 @@ import '../../../../core/constants.dart';
 import 'recipe_page.dart';
 
 class EditablePage extends StatefulWidget {
-  final String jsonData; // Pass JSON data as a string when creating this page
+  final String jsonData;
 
   EditablePage({required this.jsonData});
 
@@ -15,22 +15,19 @@ class EditablePage extends StatefulWidget {
 }
 
 class _EditablePageState extends State<EditablePage> {
-  String? _userId; // User ID from Firebase
+  String? _userId;
   List<TextEditingController> _controllers = [];
   final Dio _dio = Dio();
 
   @override
   void initState() {
     super.initState();
-    _fetchUserId(); // Fetch the Firebase user ID
-    print('EditablePage received jsonData: ${widget.jsonData}');
+    _fetchUserId();
     try {
       final data = jsonDecode(widget.jsonData);
       final ingredients = List<String>.from(data['ingredients'] ?? []);
-      print('Parsed ingredients: $ingredients');
       _controllers = ingredients.map((ingredient) => TextEditingController(text: ingredient)).toList();
     } catch (e) {
-      print('Error decoding JSON or initializing ingredients: $e');
       _controllers = [];
     }
   }
@@ -38,9 +35,9 @@ class _EditablePageState extends State<EditablePage> {
   Future<void> _fetchUserId() async {
     try {
       final currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser != null) {
+      if (currentUser != null && mounted) {
         setState(() {
-          _userId = currentUser.uid; // Assign the user ID
+          _userId = currentUser.uid;
         });
       }
     } catch (e) {
@@ -50,79 +47,69 @@ class _EditablePageState extends State<EditablePage> {
 
   @override
   void dispose() {
-    // Dispose of controllers to free up memory
     _controllers.forEach((controller) => controller.dispose());
     super.dispose();
   }
 
-  // Convert the edited list back to JSON format with userId
   String getEditedJson() {
     List<String> updatedIngredients = _controllers.map((controller) {
-      String ingredient = controller.text.trim();
-      return ingredient.replaceAll(RegExp(r'^\d+\.?\s*'), ''); // Remove leading numbers and dots
+      return controller.text.trim().replaceAll(RegExp(r'^\d+\.?\s*'), '');
     }).toList();
 
-    final updatedData = {
-      'user_id': _userId, // Use Firebase user ID
+    return jsonEncode({
+      'user_id': _userId,
       'ingredients': updatedIngredients,
-    };
-    return jsonEncode(updatedData);
+    });
   }
 
-  // Function to send edited data to the server
   Future<void> sendEditedData() async {
     try {
       final editedJson = getEditedJson();
       final decodedData = jsonDecode(editedJson);
 
       final response = await _dio.post(
-        '${Constants.serverIP}/submit_json', // Replace with your server endpoint
-        data: decodedData, // Packaged in the updated JSON format
+        '${Constants.serverIP}/submit_json',
+        data: decodedData,
       );
-
-      // Log the full server response
-      print("Server Response: ${response.data}");
 
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Data sent successfully!")),
-        );
-
-        // Assuming the server response contains the recipe JSON data
-        final jsonResponseFromServer = response.data; // Adjust as necessary if the data is wrapped
-
-        // Navigate to RecipePage with the received JSON
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => RecipePage(jsonData: jsonEncode(jsonResponseFromServer)),
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Data sent successfully!")),
+          );
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RecipePage(jsonData: jsonEncode(response.data)),
+            ),
+          );
+        }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to send data.")),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Failed to send data.")),
+          );
+        }
       }
     } catch (e) {
-      print("Error sending data: $e"); // Log the error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error sending data: $e")),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error sending data: $e")),
+        );
+      }
     }
   }
 
-  // Submit function now includes sending the data to the server
   void _submit() {
-    sendEditedData(); // Call the function to send data to the server
+    sendEditedData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5), // Slightly gray background
+      backgroundColor: const Color(0xFFF5F5F5),
       body: CustomScrollView(
         slivers: [
-          // SliverAppBar for the "FOODIE" app bar
           SliverAppBar(
             backgroundColor: Constants.primaryColor,
             expandedHeight: 110,
@@ -145,7 +132,6 @@ class _EditablePageState extends State<EditablePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Editable ingredients list
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -154,7 +140,7 @@ class _EditablePageState extends State<EditablePage> {
                       return Container(
                         margin: const EdgeInsets.symmetric(vertical: 8),
                         decoration: BoxDecoration(
-                          color: Colors.white, // White rectangle
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
@@ -167,14 +153,12 @@ class _EditablePageState extends State<EditablePage> {
                         child: ListTile(
                           title: TextField(
                             controller: _controllers[index],
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold, // Bold text for ingredient
-                            ),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               labelText: 'Ingredient #${index + 1}',
                               labelStyle: const TextStyle(
-                                color: Colors.red, // Red label text
+                                color: Colors.red,
                                 fontWeight: FontWeight.bold,
                               ),
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -203,14 +187,12 @@ class _EditablePageState extends State<EditablePage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Buttons for Add and Submit
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ElevatedButton(
                         onPressed: () {
                           setState(() {
-                            // Add a new TextEditingController to the list for a new ingredient
                             _controllers.add(TextEditingController());
                           });
                         },
@@ -227,7 +209,7 @@ class _EditablePageState extends State<EditablePage> {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: _submit, // Trigger the submit function
+                        onPressed: _submit,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Constants.primaryColor,
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),

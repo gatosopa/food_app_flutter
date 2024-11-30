@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class Constants {
 
- static var serverIP = "https://adapting-kite-regularly.ngrok-free.app";
+ static const String serverIP = "https://adapting-kite-regularly.ngrok-free.app";
 
  static var primaryColor = const Color(0xffef233c); 
  static var secondaryColor = const Color(0xfffff1e1);
