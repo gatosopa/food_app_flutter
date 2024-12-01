@@ -5,24 +5,22 @@ import 'package:food_app_flutter/src/features/recipe/widgets/recipe_appbar.dart'
 import 'package:food_app_flutter/src/features/recipe/widgets/detail_ingredients.dart';
 import 'package:food_app_flutter/src/features/recipe/widgets/detail_nutrition.dart';
 import 'package:food_app_flutter/src/features/recipe/widgets/expanded_widget.dart';
-import 'package:food_app_flutter/src/models/food.dart';
+import 'package:food_app_flutter/src/features/camera/data/models/recipe_model.dart';
 
-class DetailPage extends StatefulWidget {
-  const DetailPage({super.key, required this.food});
-  final Food food;
+class DetailPage extends StatelessWidget {
+  final Recipe recipe;
 
-  @override
-  State<DetailPage> createState() => _DetailPageState();
-}
+  const DetailPage({Key? key, required this.recipe}) : super(key: key);
 
-class _DetailPageState extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: CustomScrollView(
         slivers: <Widget>[
-          RecipeviewAppbar(food: widget.food),
+          RecipeviewAppbar(
+            recipe: recipe, // Pass the entire Recipe object
+          ),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -31,65 +29,81 @@ class _DetailPageState extends State<DetailPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const SizedBox(height: 8.0),
-                  SectionHeading(
-                    title: widget.food.foodName,
-                    showActionButton: false,
+                  Text(
+                    recipe.title,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8.0),
-                  DefaultTextStyle(
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium!
-                        .copyWith(color: Colors.black),
-                    child: Row(
-                      children: [
-                        const Text('Italian'), // Replace with food category if available
-                        const SizedBox(width: 8.0),
-                        Container(
-                          height: 5.0,
-                          width: 5.0,
-                          decoration: const BoxDecoration(
-                            color: Colors.grey,
-                            shape: BoxShape.circle,
-                          ),
+                  Row(
+                    children: [
+                      Text(
+                        recipe.cuisineType,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey,
                         ),
-                        const SizedBox(width: 8.0),
-                        const Text('60 mins'), // Replace with dynamic time if available
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: 8.0),
+                      Container(
+                        height: 5.0,
+                        width: 5.0,
+                        decoration: const BoxDecoration(
+                          color: Colors.grey,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 8.0),
+                      Text(
+                        recipe.cookingTime != null
+                            ? '${recipe.cookingTime} mins'
+                            : 'Unknown time',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16.0),
-                  // Display the recipe steps
-                  Text(
+                  const Text(
                     'Steps',
-                    style: const TextStyle(
-                      fontSize: 18,
+                    style: TextStyle(
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8.0),
-                  // Use the ExpandedWidget to display recipe steps
-                  ExpandedWidget(
-                    text: widget.food.steps.join("\n\n"), // Combine steps into a single string
-                  ),
-                  const Divider(color: Colors.grey, height: 1.0),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 0),
-                    child: DetailNutrition(),
-                  ),
+                  recipe.steps.isNotEmpty
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: recipe.steps.map((step) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4.0),
+                              child: Text('- $step'),
+                            );
+                          }).toList(),
+                        )
+                      : const Text('No steps available.'),
                   const SizedBox(height: 16.0),
-                  // Ingredients Section
-                  Text(
+                  const Text(
                     'Ingredients',
-                    style: const TextStyle(
-                      fontSize: 18,
+                    style: TextStyle(
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8.0),
-                  Padding(
-                    padding: const EdgeInsets.all(1),
-                    child: DetailIngredientlist(food: widget.food),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: recipe.existingIngredients.map((ingredient) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2.0),
+                        child: Text('- $ingredient'),
+                      );
+                    }).toList(),
                   ),
                   const SizedBox(height: 16.0),
                   ElevatedButton(
@@ -97,7 +111,7 @@ class _DetailPageState extends State<DetailPage> {
                       // Add to favorites logic
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Constants.primaryColor,
+                      backgroundColor: Colors.red,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -108,7 +122,6 @@ class _DetailPageState extends State<DetailPage> {
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
-                  const SizedBox(height: 16.0),
                 ],
               ),
             ),

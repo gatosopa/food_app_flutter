@@ -2,29 +2,28 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:food_app_flutter/src/models/food.dart';
+import 'package:food_app_flutter/src/features/camera/data/models/recipe_model.dart';
 
-class RecipeviewAppbar extends StatefulWidget {
-  const RecipeviewAppbar({super.key, required this.food});
-  final Food food;
+class RecipeviewAppbar extends StatelessWidget {
+  final Recipe recipe;
 
+  const RecipeviewAppbar({
+    super.key,
+    required this.recipe,
+  });
 
-  @override
-  State<RecipeviewAppbar> createState() => _RecipeviewAppbarState();
-}
-
-class _RecipeviewAppbarState extends State<RecipeviewAppbar> {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      systemOverlayStyle: const SystemUiOverlayStyle(statusBarBrightness : Brightness.dark),
+      systemOverlayStyle: const SystemUiOverlayStyle(statusBarBrightness: Brightness.dark),
       expandedHeight: 275.0,
       backgroundColor: Colors.white,
       elevation: 0.0,
       pinned: true,
       stretch: true,
       flexibleSpace: FlexibleSpaceBar(
-        background: Image.asset(widget.food.imageUrl,
+        background: Image.network(
+          recipe.image,
           fit: BoxFit.cover,
         ),
         stretchModes: const [
@@ -49,13 +48,12 @@ class _RecipeviewAppbarState extends State<RecipeviewAppbar> {
             height: 5.0,
             decoration: BoxDecoration(
               color: Colors.grey,
-              borderRadius: BorderRadius.circular(100.0)
+              borderRadius: BorderRadius.circular(100.0),
             ),
           ),
         ),
       ),
       leadingWidth: 80.0,
-
     );
   }
 }

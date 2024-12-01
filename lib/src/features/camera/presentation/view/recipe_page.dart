@@ -3,9 +3,8 @@ import '../../data/models/recipe_model.dart';
 import 'widgets/recipe_card.dart';
 import 'available_ingredient_page.dart';
 import 'needed_ingredient_page.dart';
-import 'dart:convert'; // Adjust the path as per your project structure
+import 'dart:convert';
 
-// Function to parse recipes from JSON
 List<Recipe> parseRecipes(String jsonData) {
   final data = jsonDecode(jsonData);
   if (data is List) {
@@ -15,25 +14,19 @@ List<Recipe> parseRecipes(String jsonData) {
   }
 }
 
-// Helper method to convert List<String> to List<Map<String, dynamic>>
-List<Map<String, dynamic>> mapIngredients(List<String> ingredients) {
-  return ingredients
-      .map((ingredient) => {
-            "type": "Ingredient",
-            "name": ingredient,
-            "amount": "-", // Placeholder amount
-          })
-      .toList();
-}
-
 class RecipePage extends StatelessWidget {
   final String jsonData;
 
-  RecipePage({required this.jsonData});
+  RecipePage({required this.jsonData}) {
+    // Log the received JSON data
+    print("Received JSON from backend:");
+    print(jsonData);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final recipes = parseRecipes(jsonData); // Parse the JSON data to recipes
+    final recipes = parseRecipes(jsonData);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Recipes'),
@@ -51,18 +44,29 @@ class RecipePage extends StatelessWidget {
                 final recipe = recipes[index];
                 return GestureDetector(
                   onTap: () {
-                    // Navigate to the AvailableIngredientPage on tap
+                    // Log the JSON data being sent for the specific recipe
+                    final ingredientJson = jsonEncode(recipe.existingIngredients
+                        .map((ingredient) => {'name': ingredient})
+                        .toList());
+
+                    print("JSON being sent to AvailableIngredientPage:");
+                    print(ingredientJson);
+
+                    // Navigate to AvailableIngredientPage
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => AvailableIngredientPage(
-                          availableIngredients:
-                              mapIngredients(recipe.existingIngredients),
+                          availableIngredients: recipe.existingIngredients
+                              .map((ingredient) => {'name': ingredient})
+                              .toList(),
                         ),
                       ),
                     );
                   },
-                  child: RecipeCard(recipe: recipe),
+                  child: RecipeCard(
+                    recipe: recipe,
+                  ),
                 );
               },
             ),

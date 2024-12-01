@@ -15,9 +15,9 @@ class RecipeCard extends StatelessWidget {
   List<Map<String, dynamic>> mapIngredients(List<String> ingredients) {
     return ingredients
         .map((ingredient) => {
-              "type": "Ingredient", // Add a type field if needed
+              "type": "Ingredient",
               "name": ingredient,
-              "amount": "-", // Placeholder amount
+              "amount": "-",
             })
         .toList();
   }
@@ -26,11 +26,11 @@ class RecipeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Convert Recipe to Food and navigate to DetailPage
+        // Navigate to DetailPage with converted Food object
         Navigator.push(
           context,
           PageTransition(
-            child: DetailPage(food: recipe.toFood()), // Convert Recipe to Food
+            child: DetailPage(recipe: recipe),
             type: PageTransitionType.bottomToTop,
           ),
         );
@@ -66,7 +66,7 @@ class RecipeCard extends StatelessWidget {
                       onTap: () {
                         // Add functionality for marking as favorite
                       },
-                      child: Icon(
+                      child: const Icon(
                         Icons.favorite_border,
                         color: Colors.white,
                         size: 28.0,
@@ -149,7 +149,7 @@ class RecipeCard extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      // Convert existingIngredients to List<Map<String, dynamic>> and navigate
+                      // Navigate to Available Ingredients Page
                       Navigator.push(
                         context,
                         PageTransition(
@@ -174,7 +174,7 @@ class RecipeCard extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      // Convert nonExistingIngredients to List<Map<String, dynamic>> and navigate
+                      // Navigate to Needed Ingredients Page
                       Navigator.push(
                         context,
                         PageTransition(

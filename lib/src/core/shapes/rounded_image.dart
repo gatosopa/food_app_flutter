@@ -3,6 +3,7 @@ import 'package:food_app_flutter/src/core/constants.dart';
 import 'package:food_app_flutter/src/features/recipe/detail_page.dart';
 import 'package:food_app_flutter/src/models/food.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:food_app_flutter/src/features/camera/data/models/recipe_model.dart';
 
 class RoundedImage extends StatelessWidget {
   const RoundedImage({
@@ -41,8 +42,27 @@ class RoundedImage extends StatelessWidget {
     }
 
     return GestureDetector(
-      onTap: (){
-        Navigator.push(context, PageTransition(child: DetailPage(food: food), type: PageTransitionType.bottomToTop));
+      onTap: () {
+        final recipe = Recipe(
+          id: food.foodId,
+          title: food.foodName,
+          image: food.imageUrl,
+          calories: food.foodCalories,
+          existingIngredients: [], // Populate appropriately
+          nonExistingIngredients: [], // Populate appropriately
+          nutrients: [], // Populate appropriately
+          steps: food.steps,
+          cuisineType: 'Unknown', // Populate appropriately
+          cookingTime: null, // Populate appropriately
+        );
+
+        Navigator.push(
+          context,
+          PageTransition(
+            child: DetailPage(recipe: recipe),
+            type: PageTransitionType.bottomToTop,
+          ),
+        );
       },
       child: AnimatedContainer(
         duration: Duration(milliseconds: 300),

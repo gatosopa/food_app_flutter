@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 class DetailNutrition extends StatelessWidget {
-  const DetailNutrition({super.key,});
+  final List<String>? nutrients;
+
+  const DetailNutrition({
+    super.key,
+    this.nutrients,
+  });
 
   @override
   Widget build(BuildContext context) {
