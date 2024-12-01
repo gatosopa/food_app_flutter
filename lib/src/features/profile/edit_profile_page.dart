@@ -46,14 +46,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> _loadProfileImage() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final profileImagePath = path.join(directory.path, 'profile_image.png');
-    final file = File(profileImagePath);
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final profileImagePath = path.join(directory.path, 'profile_image.png');
+      final file = File(profileImagePath);
 
-    if (await file.exists()) {
-      setState(() {
-        _profileImage = file;
-      });
+      if (await file.exists()) {
+        if (mounted) {
+          setState(() {
+            _profileImage = file;
+          });
+        }
+      }
+    } catch (e) {
+      print('Error loading profile image: $e');
     }
   }
 
@@ -62,13 +68,36 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      final directory = await getApplicationDocumentsDirectory();
-      final profileImagePath = path.join(directory.path, 'profile_image.png');
-      final newImage = File(pickedFile.path).copySync(profileImagePath);
+      try {
+        final directory = await getApplicationDocumentsDirectory();
+        final profileImagePath = path.join(directory.path, 'profile_image.png');
 
-      setState(() {
-        _profileImage = newImage;
-      });
+        final newImage = File(pickedFile.path);
+        
+        await newImage.copy(profileImagePath);
+
+        if (mounted) {
+          setState(() {
+            _profileImage = newImage;
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Error'),
+              content: const Text('Failed to update the profile picture. Please try again.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
+      }
     }
   }
 
@@ -77,6 +106,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
       final currentUser = FirebaseAuth.instance.currentUser;
 
       if (currentUser != null) {
+        // Save profile image locally if it exists
+        if (_profileImage != null) {
+          final directory = await getApplicationDocumentsDirectory();
+          final profileImagePath = path.join(directory.path, 'profile_image.png');
+          
+          // Create a copy of the image
+          final savedImage = await _profileImage!.copy(profileImagePath);
+          
+          // Update the state with the saved image
+          if (mounted) {
+            setState(() {
+              _profileImage = savedImage;
+            });
+          }
+        }
+
         if (emailController.text.trim() != widget.email) {
           await currentUser.updateEmail(emailController.text.trim());
         }

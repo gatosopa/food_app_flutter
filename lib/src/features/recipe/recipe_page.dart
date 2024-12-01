@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../data/models/recipe_model.dart';
-import 'widgets/recipe_card.dart';
-import 'available_ingredient_page.dart';
-import 'needed_ingredient_page.dart';
+import '../camera/data/models/recipe_model.dart';
+import '../camera/presentation/view/widgets/recipe_card.dart';
+import '../camera/presentation/view/available_ingredient_page.dart';
+import '../camera/presentation/view/needed_ingredient_page.dart';
 import 'dart:convert';
 
 List<Recipe> parseRecipes(String jsonData) {

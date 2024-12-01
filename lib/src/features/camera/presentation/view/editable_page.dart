@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../core/constants.dart';
-import 'recipe_page.dart';
+import '../../../recipe/recipe_page.dart';
 
 class EditablePage extends StatefulWidget {
   final String jsonData;
