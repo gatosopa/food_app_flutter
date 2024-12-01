@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:food_app_flutter/src/core/constants.dart';
-import 'package:food_app_flutter/src/features/recipe/widgets/recipe_appbar.dart';
 import 'package:food_app_flutter/src/features/recipe/widgets/detail_nutrition.dart';
 import 'package:food_app_flutter/src/features/camera/data/models/recipe_model.dart';
+import 'package:food_app_flutter/src/core/widgets/bottom_navigation_bar.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:food_app_flutter/src/features/camera/presentation/view/camera_page.dart';
 
 class DetailPage extends StatefulWidget {
   final Recipe recipe;
@@ -15,11 +17,19 @@ class DetailPage extends StatefulWidget {
 
 class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  int _currentTabIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+  }
+
+  void _onTabChanged(int index) {
+    setState(() {
+      _currentTabIndex = index;
+    });
+    // Add navigation logic for bottom nav bar here if needed
   }
 
   @override
@@ -223,6 +233,32 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                 ],
               ),
             ),
+          ),
+          // Bottom Navigation Bar
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              CustomBottomNavigationBar(
+                currentIndex: _currentTabIndex,
+                onTap: _onTabChanged,
+              ),
+              Positioned(
+                bottom: 15.0,
+                child: FloatingActionButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        child: const CameraPage(),
+                        type: PageTransitionType.bottomToTop,
+                      ),
+                    );
+                  },
+                  backgroundColor: Constants.primaryColor,
+                  child: Icon(Icons.camera_alt, color: Colors.white),
+                ),
+              ),
+            ],
           ),
         ],
       ),

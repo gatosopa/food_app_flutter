@@ -4,6 +4,8 @@ import '../camera/presentation/view/widgets/recipe_card.dart';
 import '../camera/presentation/view/available_ingredient_page.dart';
 import '../camera/presentation/view/needed_ingredient_page.dart';
 import 'dart:convert';
+import 'package:food_app_flutter/src/core/constants.dart';
+import 'package:food_app_flutter/src/core/widgets/bottom_navigation_bar.dart';
 
 List<Recipe> parseRecipes(String jsonData) {
   final data = jsonDecode(jsonData);
@@ -14,7 +16,7 @@ List<Recipe> parseRecipes(String jsonData) {
   }
 }
 
-class RecipePage extends StatelessWidget {
+class RecipePage extends StatefulWidget {
   final String jsonData;
 
   RecipePage({required this.jsonData}) {
@@ -24,8 +26,23 @@ class RecipePage extends StatelessWidget {
   }
 
   @override
+  State<RecipePage> createState() => _RecipePageState();
+}
+
+class _RecipePageState extends State<RecipePage> {
+  int _bottomNavIndex = 0;
+
+  // List of pages for navigation
+  final List<Widget> pages = const [
+    Placeholder(), // Replace with actual HomePage widget
+    Placeholder(), // Replace with actual InventoryPage widget
+    Placeholder(), // Replace with actual FavoritesPage widget
+    Placeholder(), // Replace with actual ProfilePage widget
+  ];
+
+  @override
   Widget build(BuildContext context) {
-    final recipes = parseRecipes(jsonData);
+    final recipes = parseRecipes(widget.jsonData);
 
     return Scaffold(
       appBar: AppBar(
@@ -70,6 +87,32 @@ class RecipePage extends StatelessWidget {
                 );
               },
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Add CameraPage navigation logic here
+        },
+        shape: const CircleBorder(),
+        backgroundColor: Constants.primaryColor,
+        child: Image.asset(
+          'assets/image/camera_icon_white.png',
+          height: 30.0,
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: CustomBottomNavigationBar(
+        currentIndex: _bottomNavIndex,
+        onTap: (index) {
+          setState(() {
+            _bottomNavIndex = index;
+          });
+          if (index < pages.length) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => pages[index]),
+            );
+          }
+        },
+      ),
     );
   }
 }
