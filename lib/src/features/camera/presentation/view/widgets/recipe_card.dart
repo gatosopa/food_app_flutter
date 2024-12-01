@@ -26,7 +26,7 @@ class RecipeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navigate to DetailPage with converted Food object
+        // Navigate to DetailPage with Recipe object
         Navigator.push(
           context,
           PageTransition(
@@ -57,6 +57,19 @@ class RecipeCard extends StatelessWidget {
                       height: 150,
                       width: double.infinity,
                       fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          height: 150,
+                          color: Colors.grey[200],
+                          child: const Center(
+                            child: Icon(
+                              Icons.broken_image,
+                              color: Colors.grey,
+                              size: 50,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                   Positioned(

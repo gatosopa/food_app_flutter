@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:food_app_flutter/src/core/constants.dart';
 import 'package:food_app_flutter/src/features/home/widgets/categories.dart';
@@ -88,7 +87,7 @@ class _HomePageState extends State<HomePage> {
       );
 
       if (response.statusCode == 200) {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => RecipePage(jsonData: response.data.toString()),

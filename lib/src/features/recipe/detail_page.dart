@@ -32,7 +32,28 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
             child: NestedScrollView(
               headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
                 return [
-                  RecipeviewAppbar(recipe: widget.recipe),
+                  SliverAppBar(
+                    expandedHeight: 300.0,
+                    pinned: true,
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Image.network(
+                        widget.recipe.image,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.grey[200],
+                            child: const Center(
+                              child: Icon(
+                                Icons.broken_image,
+                                size: 80,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24.0),
