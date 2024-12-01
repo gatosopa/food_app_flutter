@@ -93,109 +93,70 @@ class RecipeCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8.0),
-              // Ingredients Information
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Ingredients You Have',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4.0),
-                        ...recipe.existingIngredients.map(
-                          (ingredient) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2.0),
-                            child: Text('• $ingredient'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Ingredients You Need',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4.0),
-                        ...recipe.nonExistingIngredients.map(
-                          (ingredient) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2.0),
-                            child: Text('• $ingredient'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8.0),
               // Action Buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      // Navigate to Available Ingredients Page
-                      Navigator.push(
-                        context,
-                        PageTransition(
-                          child: AvailableIngredientPage(
-                            availableIngredients:
-                                mapIngredients(recipe.existingIngredients),
+                  Expanded(
+                    flex: 1,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            child: AvailableIngredientPage(
+                              availableIngredients: mapIngredients(recipe.existingIngredients),
+                            ),
+                            type: PageTransitionType.bottomToTop,
                           ),
-                          type: PageTransitionType.bottomToTop,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Constants.primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Constants.primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                    ),
-                    child: const Text(
-                      'Available Ingredients',
-                      style: TextStyle(color: Colors.white),
+                      child: const Center(
+                        child: Text(
+                          'Available Ingredients',
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Navigate to Needed Ingredients Page
-                      Navigator.push(
-                        context,
-                        PageTransition(
-                          child: NeededIngredientPage(
-                            neededIngredients:
-                                mapIngredients(recipe.nonExistingIngredients),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    flex: 1,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            child: NeededIngredientPage(
+                              neededIngredients: mapIngredients(recipe.nonExistingIngredients),
+                            ),
+                            type: PageTransitionType.bottomToTop,
                           ),
-                          type: PageTransitionType.bottomToTop,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                    ),
-                    child: Text(
-                      'Needed Ingredients',
-                      style: TextStyle(color: Constants.primaryColor),
+                      child: Center(
+                        child: Text(
+                          'Needed Ingredients',
+                          style: TextStyle(color: Constants.primaryColor),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                     ),
                   ),
                 ],
