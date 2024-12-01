@@ -52,24 +52,29 @@ class Recipe {
 
   // Convert Recipe to Food
   Food toFood() {
-    return Food(
-      foodId: id,
-      foodName: title,
-      foodCalories: calories,
-      imageUrl: image,
-      recipes: steps.join('\n'),
-      steps: steps,
-      isFavorated: false,
-      isSelected: false,
-      isCheap: false,
-      isDairyFree: false,
-      isGlutenFree: false,
-      isKetogenic: false,
-      isSustainable: false,
-      isVegan: false,
-      isVegetarian: false,
-      isHealthy: false,
-      isPopular: false,
-    );
-  }
+  return Food(
+    foodId: id,
+    foodName: title,
+    foodCalories: calories,
+    imageUrl: image,
+    recipes: steps.join('\n'),
+    steps: steps,
+    cuisine: cuisineType,
+    cookingTime: cookingTime,
+    nutrients: nutrients,
+    isSelected: false,
+    isFavorated: false,
+    diet: {
+      'isCheap': false,
+      'isDairyFree': false,
+      'isGlutenFree': false,
+      'isKetogenic': false,
+      'isSustainable': false,
+      'isVegan': false,
+      'isVegetarian': false,
+      'isHealthy': false,
+    },
+  );
+}
+
 }

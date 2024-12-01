@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Food {
   final String foodName;
   final int foodId;
@@ -8,19 +10,9 @@ class Food {
   final String? cuisine;
   final int? cookingTime;
   final List<String>? nutrients;
+  final Map<String, bool> diet; // Store dietary preferences as a map
   bool isSelected;
   bool isFavorated;
-
-  // Dietary Categories
-  final bool isCheap;
-  final bool isDairyFree;
-  final bool isGlutenFree;
-  final bool isKetogenic;
-  final bool isSustainable;
-  final bool isVegan;
-  final bool isVegetarian;
-  final bool isHealthy;
-  final bool isPopular;
 
   Food({
     required this.foodId,
@@ -32,17 +24,9 @@ class Food {
     this.cuisine,
     this.cookingTime,
     this.nutrients,
+    required this.diet,
     required this.isSelected,
     required this.isFavorated,
-    required this.isCheap,
-    required this.isDairyFree,
-    required this.isGlutenFree,
-    required this.isKetogenic,
-    required this.isSustainable,
-    required this.isVegan,
-    required this.isVegetarian,
-    required this.isHealthy,
-    required this.isPopular,
   });
 
   // Static list of food items (Mock Data)
@@ -57,17 +41,19 @@ class Food {
       cuisine: 'Italian',
       cookingTime: 30,
       nutrients: ['Calories: 700', 'Protein: 10g', 'Carbs: 85g'],
+      diet: {
+        'isCheap': true,
+        'isDairyFree': true,
+        'isGlutenFree': false,
+        'isKetogenic': false,
+        'isSustainable': true,
+        'isVegan': true,
+        'isVegetarian': true,
+        'isHealthy': true,
+        'isPopular': true,
+      },
       isFavorated: true,
       isSelected: false,
-      isCheap: true,
-      isDairyFree: true,
-      isGlutenFree: false,
-      isKetogenic: false,
-      isSustainable: true,
-      isVegan: true,
-      isVegetarian: true,
-      isHealthy: true,
-      isPopular: true,
     ),
   ];
 
@@ -83,18 +69,28 @@ class Food {
       cuisine: json['cuisine'],
       cookingTime: json['cooking_time'],
       nutrients: List<String>.from(json['nutrients'] ?? []),
+      diet: Map<String, bool>.from(json['diet'] ?? {}),
       isFavorated: json['isFavorited'] ?? false,
       isSelected: json['isSelected'] ?? false,
-      isCheap: json['isCheap'] ?? false,
-      isDairyFree: json['isDairyFree'] ?? false,
-      isGlutenFree: json['isGlutenFree'] ?? false,
-      isKetogenic: json['isKetogenic'] ?? false,
-      isSustainable: json['isSustainable'] ?? false,
-      isVegan: json['isVegan'] ?? false,
-      isVegetarian: json['isVegetarian'] ?? false,
-      isHealthy: json['isHealthy'] ?? false,
-      isPopular: json['isPopular'] ?? false,
     );
+  }
+
+  // Convert Food to Map for Firestore
+  Map<String, dynamic> toMap() {
+    return {
+      'id': foodId,
+      'name': foodName,
+      'calories': foodCalories,
+      'image': imageUrl,
+      'recipes': recipes,
+      'steps': steps,
+      'cuisine': cuisine,
+      'cooking_time': cookingTime,
+      'nutrients': nutrients,
+      'diet': diet,
+      'isFavorited': isFavorated,
+      'isSelected': isSelected,
+    };
   }
 
   // Get favorited items

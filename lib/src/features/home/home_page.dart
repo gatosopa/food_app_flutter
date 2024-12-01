@@ -35,46 +35,37 @@ class _HomePageState extends State<HomePage> {
     }
 
     //Filter food recipe mechanism
-    void _filterFoodList(){
+    void _filterFoodList() {
       setState(() {
-        if (selectedCategory == 'All'){
-          //Show all food
+        if (selectedCategory == 'All') {
+          // Show all food
           filteredFoodList = List.from(_foodList);
-        }
-        else{
-          filteredFoodList =_foodList.where((food) {
-          if (selectedCategory == 'Cheap'){
-            return food.isCheap == true;
-          }
-          else if (selectedCategory == 'Dairy Free'){
-            return food.isDairyFree == true;
-          }
-          else if (selectedCategory == 'Gluten Free') {
-            return food.isGlutenFree == true;
-          } 
-          else if (selectedCategory == 'Ketogenic') {
-            return food.isKetogenic == true;
-          } 
-          else if (selectedCategory == 'Sustainable') {
-            return food.isSustainable == true;
-          } 
-          else if (selectedCategory == 'Vegan') {
-            return food.isVegan == true;
-          } 
-          else if (selectedCategory == 'Vegetarian') {
-            return food.isVegetarian == true;
-          } 
-          else if (selectedCategory == 'Healthy') {
-            return food.isHealthy == true;
-          } 
-          else if (selectedCategory == 'Popular') {
-            return food.isPopular == true;
-          }
-          return false;
-        }).toList();
+        } else {
+          filteredFoodList = _foodList.where((food) {
+            final diet = food.diet;
+
+            if (selectedCategory == 'Cheap') {
+              return diet['isCheap'] ?? false;
+            } else if (selectedCategory == 'Dairy Free') {
+              return diet['isDairyFree'] ?? false;
+            } else if (selectedCategory == 'Gluten Free') {
+              return diet['isGlutenFree'] ?? false;
+            } else if (selectedCategory == 'Ketogenic') {
+              return diet['isKetogenic'] ?? false;
+            } else if (selectedCategory == 'Sustainable') {
+              return diet['isSustainable'] ?? false;
+            } else if (selectedCategory == 'Vegan') {
+              return diet['isVegan'] ?? false;
+            } else if (selectedCategory == 'Vegetarian') {
+              return diet['isVegetarian'] ?? false;
+            } else if (selectedCategory == 'Healthy') {
+              return diet['isHealthy'] ?? false;
+            }
+            return false;
+          }).toList();
         }
       });
-      print('Filtered food list: $filteredFoodList');  // Debugging
+      print('Filtered food list: $filteredFoodList'); // Debugging
     }
 
     //Callback function for category
