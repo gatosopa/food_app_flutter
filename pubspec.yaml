@@ -51,6 +51,7 @@ dependencies:
   cloud_firestore: ^5.5.0
   shared_preferences: ^2.3.3
   firebase_storage: ^12.3.6
+  ionicons: ^0.2.2
 
 dev_dependencies:
   flutter_test:

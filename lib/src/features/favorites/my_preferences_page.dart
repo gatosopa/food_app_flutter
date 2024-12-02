@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:food_app_flutter/src/features/favorites/health_page.dart';
+import 'package:food_app_flutter/src/features/favorites/lifestyle_page.dart';
+import 'package:food_app_flutter/src/features/favorites/price_page.dart';
 import 'package:food_app_flutter/src/core/constants.dart';
+import 'package:ionicons/ionicons.dart';
+import 'package:page_transition/page_transition.dart';
+
 
 class MypreferencesPage extends StatefulWidget {
   const MypreferencesPage({super.key});
@@ -12,15 +18,10 @@ class MypreferencesPage extends StatefulWidget {
 
 class _MypreferencesPageState extends State<MypreferencesPage> {
   // Map to store diet preferences
-  Map<String, bool> dietPreferences = {
-    'Vegetarian': false,
-    'Vegan': false,
-    'Gluten-Free': false,
-    'Dairy-Free': false,
-    'Ketogenic': false,
-    'Healthy': false,
-    'Sustainable': false,
-    'Cheap': false,
+  Map<String, Map<String, bool>> dietPreferences = {
+    'Price': {'Cheap': false},
+    'Health': {'Dairy-Free': false, 'Gluten-Free': false, 'Healthy': false},
+    'Lifestyle': {'Ketogenic': false, 'Sustainability': false, 'Vegan': false, 'Vegetarian': false},
   };
 
   bool isLoading = true; // To handle loading state
@@ -29,6 +30,35 @@ class _MypreferencesPageState extends State<MypreferencesPage> {
   void initState() {
     super.initState();
     fetchPreferences();
+  }
+
+  Map<String, Map<String,bool>> convertToDietPreferences(Map<String, Map<String, bool>> dietPreferences, Map<String, bool> savedPreferences) {
+    final updatedPreferences = {
+      for(var category in dietPreferences.keys)
+        category: {...dietPreferences[category]!}
+    };
+    
+    savedPreferences.forEach((key, value) {
+      updatedPreferences.forEach((category, preferences){
+        if (preferences.containsKey(key)) {
+          preferences[key] = value;
+      }
+      });
+    });
+
+    return updatedPreferences;
+  }
+
+  Map<String, bool> flattenDietPreferences(Map<String, Map<String, bool>> dietPreferences) {
+    final Map<String, bool> flattenedPreferences = {};
+
+    dietPreferences.forEach((category, preferences) {
+      preferences.forEach((key, value) {
+        flattenedPreferences[key] = value;
+      });
+    });
+
+    return flattenedPreferences;
   }
 
   // Method to fetch preferences from Firestore
@@ -56,7 +86,7 @@ class _MypreferencesPageState extends State<MypreferencesPage> {
         setState(() {
           dietPreferences = {
             ...dietPreferences, // Keep default preferences for missing keys
-            ...savedPreferences, // Overwrite with saved preferences
+            ...convertToDietPreferences(dietPreferences, savedPreferences), // Overwrite with saved preferences
           };
           isLoading = false; // Disable loading
         });
@@ -76,89 +106,157 @@ class _MypreferencesPageState extends State<MypreferencesPage> {
     }
   }
 
-  // Method to handle saving preferences to Firestore
-  Future<void> savePreferences() async {
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        throw Exception("User not signed in.");
-      }
-
-      final userId = user.uid;
-
-      // Save preferences under /users/{userId}
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .set({
-            'dietPreferences': dietPreferences,
-          }, SetOptions(merge: true)); // Use merge to keep existing data intact
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Preferences saved!")),
-      );
-    } catch (e) {
-      print("Error saving preferences: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Error saving preferences.")),
-      );
-    }
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Constants.backgroundColor,
       appBar: AppBar(
-        title: const Text('My Diet Preferences'),
-        centerTitle: true,
-        backgroundColor: Constants.primaryColor,
+        backgroundColor: Constants.backgroundColor,
+        leading: IconButton(
+          onPressed: (){
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.keyboard_arrow_left, color: Constants.primaryColor),
+        ),
+        leadingWidth: 100,
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator()) // Show loader if data is loading
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("My Preferences", style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+              fontSize: 30
+            ),),
+            const SizedBox(height: 20,),
+            Container(
+              width: double.infinity,
+              child: Row(
                 children: [
-                  const Text(
-                    'Select your dietary preferences:',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  Container(
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.blue.shade100,
+                    ),
+                    child: Icon(Ionicons.pricetag, color: Colors.blue)
                   ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: ListView(
-                      children: dietPreferences.keys.map((diet) {
-                        return SwitchListTile(
-                          title: Text(diet),
-                          value: dietPreferences[diet]!,
-                          activeColor: Constants.primaryColor,
-                          onChanged: (bool value) {
-                            setState(() {
-                              dietPreferences[diet] = value;
-                            });
-                          },
-                        );
-                      }).toList(),
+                  const SizedBox(width: 20,),
+                  Text(
+                    "Price",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: savePreferences,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Constants.primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(context, PageTransition(child: PricePage(preferences: dietPreferences['Price']!), type: PageTransitionType.rightToLeft));
+                    },
+                    child: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                      minimumSize: const Size(double.infinity, 50),
-                    ),
-                    child: const Text(
-                      'Save Preferences',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                      child: Icon(Icons.keyboard_arrow_right, color: Constants.primaryColor)
                     ),
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: 20,),
+            Container(
+              width: double.infinity,
+              child: Row(
+                children: [
+                  Container(
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.red.shade100,
+                    ),
+                    child: Icon(Ionicons.heart, color: Constants.primaryColor,)
+                  ),
+                  const SizedBox(width: 20,),
+                  Text(
+                    "Health",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(context, PageTransition(child: HealthPage(preferences: dietPreferences['Health']!), type: PageTransitionType.rightToLeft));
+                    },
+                    child: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Icon(Icons.keyboard_arrow_right, color: Constants.primaryColor)
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20,),
+            Container(
+              width: double.infinity,
+              child: Row(
+                children: [
+                  Container(
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.green.shade100,
+                    ),
+                    child: Icon(Ionicons.medical, color: Colors.green,)
+                  ),
+                  const SizedBox(width: 20,),
+                  Text(
+                    "Lifestyle",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(context, PageTransition(child: LifestylePage(preferences: dietPreferences['Lifestyle']!), type: PageTransitionType.rightToLeft));
+                    },
+                    child: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Icon(Icons.keyboard_arrow_right, color: Constants.primaryColor)
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20,),
+            
+        
+          ],
+        ),
+      ),
     );
   }
 }

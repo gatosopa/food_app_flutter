@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:food_app_flutter/src/core/constants.dart';
 import 'package:food_app_flutter/src/core/shapes/circular_container.dart';
 import 'package:food_app_flutter/src/core/shapes/rounded_image.dart';
-import 'package:food_app_flutter/src/features/home/controller.dart';
+import 'package:food_app_flutter/src/features/home/controllers/controller.dart';
 import 'package:food_app_flutter/src/models/food.dart';
 import 'package:get/get.dart';
 

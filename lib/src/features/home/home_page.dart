@@ -8,6 +8,8 @@ import 'package:iconsax/iconsax.dart';
 import 'package:food_app_flutter/src/core/containers/section_heading.dart';
 import 'package:dio/dio.dart';
 import 'package:food_app_flutter/src/features/recipe/recipe_page.dart';
+import 'package:food_app_flutter/src/features/home/search_page.dart';
+import 'package:page_transition/page_transition.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -145,37 +147,37 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    width: size.width * .9,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(17),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.search, color: Colors.black54.withOpacity(.6)),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: TextField(
-                            controller: _searchController,
-                            showCursor: true,
-                            onSubmitted: (query) {
-                              if (query.trim().isNotEmpty) {
-                                _sendSearchQuery(query); // Send query to backend
-                              }
-                            },
-                            decoration: const InputDecoration(
-                              hintText: 'Find a Famous Recipe',
-                              border: InputBorder.none,
-                              focusedBorder: InputBorder.none,
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(context, PageTransition(child: SearchPage(), type: PageTransitionType.rightToLeft));
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      width: size.width * .9,
+                      height: size.height * .05,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(17),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.search, color: Colors.black54.withOpacity(.6)),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: Text(
+                              'Search for Recipes...',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black54.withOpacity(.6),
+                              ),
                             ),
+                            
                           ),
-                        ),
-                        Icon(Icons.mic, color: Colors.black54.withOpacity(.6)),
-                      ],
+                          Icon(Icons.mic, color: Colors.black54.withOpacity(.6)),
+                        ],
+                      ),
                     ),
                   )
                 ],

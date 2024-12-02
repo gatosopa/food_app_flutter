@@ -4,6 +4,9 @@ import 'package:page_transition/page_transition.dart';
 import 'package:food_app_flutter/src/features/recipe/detail_page.dart';
 import 'package:food_app_flutter/src/features/camera/presentation/view/available_ingredient_page.dart';
 import 'package:food_app_flutter/src/features/camera/presentation/view/needed_ingredient_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '../../../data/models/recipe_model.dart';
 
 class RecipeCard extends StatelessWidget {
@@ -20,6 +23,30 @@ class RecipeCard extends StatelessWidget {
               "amount": "-",
             })
         .toList();
+  }
+
+  // Function to add recipe ID to user's favorites array
+  Future<void> _addToFavorites(int recipeId) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      // Handle unauthenticated state
+      print("User is not signed in.");
+      return;
+    }
+
+    try {
+      final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+      // Update the favorites array
+      await userDoc.update({
+        'favorites': FieldValue.arrayUnion([recipeId]), // Add recipe ID to array
+      });
+
+      print("Recipe added to favorites: $recipeId");
+    } catch (e) {
+      print("Error adding to favorites: $e");
+    }
   }
 
   @override
@@ -77,7 +104,7 @@ class RecipeCard extends StatelessWidget {
                     right: 8,
                     child: GestureDetector(
                       onTap: () {
-                        // Add functionality for marking as favorite
+                        _addToFavorites(recipe.id);
                       },
                       child: const Icon(
                         Icons.favorite_border,
