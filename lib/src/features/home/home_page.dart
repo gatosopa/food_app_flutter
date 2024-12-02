@@ -19,8 +19,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final TextEditingController _searchController = TextEditingController(); // Controller for search bar
-  final Dio _dio = Dio(); // Dio instance for making requests
+ // Dio instance for making requests
 
   List<Food> _foodList = [];
   List<Food> filteredFoodList = [];
@@ -68,44 +67,7 @@ class _HomePageState extends State<HomePage> {
     print('Filtered food list: $filteredFoodList'); // Debugging
   }
 
-  // Callback function for category
-  void _onCategorySelected(String category) {
-    setState(() {
-      selectedCategory = category;
-    });
-    _filterFoodList();
-  }
-
-  // Method to send the search query to the backend
-  Future<void> _sendSearchQuery(String query) async {
-    setState(() {
-      _isLoading = true; // Show loading indicator
-    });
-
-    try {
-      final response = await _dio.post(
-        '${Constants.serverIP}/search', // Replace with your backend URL
-        data: {'query': query},
-      );
-
-      if (response.statusCode == 200) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => RecipePage(jsonData: response.data.toString()),
-          ),
-        );
-      } else {
-        _showErrorSnackbar("Failed to fetch recipes.");
-      }
-    } catch (e) {
-      _showErrorSnackbar("Error sending search query: $e");
-    } finally {
-      setState(() {
-        _isLoading = false; // Hide loading indicator
-      });
-    }
-  }
+  
 
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -233,82 +195,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-          // Filtered Food List
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 50),
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  Categories(
-                    currentCat: selectedCategory,
-                    onCategorySelected: _onCategorySelected,
-                  ),
-                  const SizedBox(height: 20),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: filteredFoodList.isEmpty
-                          ? [const Center(child: Text('No recipe found for this category!'))]
-                          : List.generate(
-                              filteredFoodList.length,
-                              (index) => Container(
-                                margin: EdgeInsets.only(
-                                  left: index == 0 ? 20 : 0,
-                                  right: index == _foodList.length - 1 ? 20 : 10,
-                                ),
-                                width: 200,
-                                child: Stack(
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          width: double.infinity,
-                                          height: 130,
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(15),
-                                            image: DecorationImage(
-                                              image: AssetImage(
-                                                  filteredFoodList[index].imageUrl),
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          filteredFoodList[index].foodName,
-                                          style: const TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        const SizedBox(height: 5),
-                                        Row(
-                                          children: [
-                                            const Icon(
-                                              Iconsax.flash_1,
-                                              size: 18,
-                                              color: Colors.grey,
-                                            ),
-                                            Text(
-                                              "${filteredFoodList[index].foodCalories} Cal",
-                                              style: const TextStyle(
-                                                  fontSize: 12, color: Colors.grey),
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
+          
         ],
       ),
     );

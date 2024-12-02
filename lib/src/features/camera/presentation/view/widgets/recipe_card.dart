@@ -7,7 +7,7 @@ import 'package:food_app_flutter/src/features/camera/presentation/view/needed_in
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../../data/models/recipe_model.dart';
+import '../../../../../models/recipe_model.dart';
 
 class RecipeCard extends StatelessWidget {
   final Recipe recipe;
