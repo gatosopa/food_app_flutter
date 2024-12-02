@@ -1,5 +1,5 @@
 import 'dart:convert';
-import '../../features/camera/data/models/recipe_model.dart';
+import '../../models/recipe_model.dart';
 
 List<Recipe> parseRecipes(String jsonData) {
   final data = jsonDecode(jsonData) as List;

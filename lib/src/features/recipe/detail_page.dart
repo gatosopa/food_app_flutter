@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:food_app_flutter/src/core/constants.dart';
 import 'package:food_app_flutter/src/features/recipe/widgets/detail_nutrition.dart';
-import 'package:food_app_flutter/src/features/camera/data/models/recipe_model.dart';
+import 'package:food_app_flutter/src/models/recipe_model.dart';
 import 'package:food_app_flutter/src/core/widgets/bottom_navigation_bar.dart';
 import 'package:food_app_flutter/src/features/favorites/favorites_page.dart';
 import 'package:food_app_flutter/src/features/home/home_page.dart';

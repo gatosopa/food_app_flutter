@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:food_app_flutter/src/features/camera/data/models/recipe_model.dart';
+import 'package:food_app_flutter/src/models/recipe_model.dart';
 
 class RecipeviewAppbar extends StatelessWidget {
   final Recipe recipe;

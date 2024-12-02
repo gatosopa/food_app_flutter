@@ -1,14 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'dart:convert';
+import '../camera/presentation/view/widgets/recipe_card.dart';
+import '../camera/presentation/view/available_ingredient_page.dart';
 import 'package:food_app_flutter/src/core/constants.dart';
 import 'package:food_app_flutter/src/core/widgets/food_card.dart';
 import 'package:food_app_flutter/src/models/food.dart';
 import 'package:food_app_flutter/src/models/recipe_model.dart';
 import 'package:food_app_flutter/src/features/recipe/recipe_page.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
+
+List<Recipe> parseRecipes(String jsonData) {
+  final data = jsonDecode(jsonData);
+  if (data is List) {
+    return data.map((recipe) => Recipe.fromJson(recipe)).toList();
+  } else {
+    throw Exception('Invalid JSON format for recipes');
+  }
+}
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({super.key});
+
+  
+  const SearchPage({Key? key,}) : super(key: key);
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -18,10 +32,44 @@ class _SearchPageState extends State<SearchPage> {
   final TextEditingController _controller = TextEditingController();
   final Dio _dio = Dio(); // For HTTP requests
 
-  List<String> _recipelist = ['Aglio e Olio', 'Salad', 'Fried Rice'];
+  List<String> _recipelist = [
+    'Pasta',
+    'Salad',
+    'Rice',
+    'Soup',
+    'Sandwich',
+    'Pizza',
+    'Burger',
+    'Steak',
+    'Fries',
+    'Curry',
+    'Omelette',
+    'Tacos',
+    'Sushi',
+    'Toast',
+    'Bacon',
+    'Pancakes',
+    'Waffles',
+    'Smoothie',
+    'Wrap',
+    'Noodles',
+    'Grilled Cheese',
+    'Hot Dog',
+    'BBQ Ribs',
+    'Chili',
+    'Lasagna',
+    'Biryani',
+    'Casserole',
+    'Dumplings',
+    'Mac and Cheese',
+    'Stir Fry'
+  ];
+
   List<String> _filteredRecipes = [];
   bool _isLoading = false;
   bool _isProgrammaticUpdate = false;
+  bool _isShowRecipe = false;
+  String jsonData = "";
 
   @override
   void initState() {
@@ -43,10 +91,14 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       if (_controller.text.isEmpty) {
         _filteredRecipes = _recipelist;
+        _isShowRecipe = false;
       } else {
         _filteredRecipes = _recipelist
             .where((item) => item.toLowerCase().contains(_controller.text.toLowerCase()))
             .toList();
+         if (_filteredRecipes.isNotEmpty) {
+          _isShowRecipe = false;
+        }
       }
     });
   }
@@ -82,12 +134,8 @@ class _SearchPageState extends State<SearchPage> {
 
         // Navigate to RecipePage with the response data
         if (mounted) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => RecipePage(jsonData: jsonEncode(data['recipes'])),
-            ),
-          );
+          jsonData = jsonEncode(data['recipes']);
+          
         }
       } else {
         print("Failed to fetch recipes. Status Code: ${response.statusCode}");
@@ -103,6 +151,7 @@ class _SearchPageState extends State<SearchPage> {
     } finally {
       setState(() {
         _isLoading = false;
+        _isShowRecipe = true;
       });
     }
   }
@@ -112,6 +161,7 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       _isProgrammaticUpdate = true;
       _controller.text = suggestion;
+      _isShowRecipe = true;
     });
 
     FocusScope.of(context).unfocus();
@@ -125,10 +175,22 @@ class _SearchPageState extends State<SearchPage> {
   void _onSearchSubmitted(String query) {
     FocusScope.of(context).unfocus();
     sendSearchQuery(query, 2);
+  
   }
 
   @override
   Widget build(BuildContext context) {
+    List<Recipe> recipes = [];
+    if (_isShowRecipe && jsonData.isNotEmpty) {
+      try {
+        recipes = parseRecipes(jsonData); // Parse only if jsonData is valid
+      } catch (e) {
+        print("Error parsing recipes: $e");
+        recipes = [];
+      }
+    }
+
+    Size size = MediaQuery.of(context).size; // Get screen size
     return Scaffold(
       backgroundColor: Constants.backgroundColor,
       appBar: AppBar(
@@ -155,20 +217,65 @@ class _SearchPageState extends State<SearchPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
-              controller: _controller,
-              decoration: const InputDecoration(
-                hintText: 'Search for recipes...',
-                border: OutlineInputBorder(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              width: size.width * .9,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(17),
               ),
-              onSubmitted: _onSearchSubmitted,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.search, color: Colors.black54.withOpacity(.6)),
+                  SizedBox(width: 20),
+
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      decoration: const InputDecoration(
+                        hintText: 'Search the Foodie App',
+                        hintStyle: TextStyle(color: Colors.black54),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none
+                      ),
+                      onSubmitted: _onSearchSubmitted,
+                    ),
+                  ),
+                  Icon(Icons.mic, color: Colors.black54.withOpacity(.6)),
+                ],
+              ),
             ),
             const SizedBox(height: 20),
-            if (_isLoading)
-              const Center(child: CircularProgressIndicator())
-            else
-              Expanded(
-                child: _filteredRecipes.isEmpty
+            Expanded(
+              child: _isShowRecipe
+                ? _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                        itemCount: recipes.length,
+                        itemBuilder: (context, index) {
+                          final recipe = recipes[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AvailableIngredientPage(
+                                    availableIngredients: recipe.existingIngredients
+                                        .map((ingredient) => {'name': ingredient})
+                                        .toList(),
+                                  ),
+                                ),
+                              );
+                            },
+                            child: RecipeCard(
+                              recipe: recipe,
+                            ),
+                          );
+                        },
+                      )
+                : _filteredRecipes.isEmpty
                     ? const Center(
                         child: Text(
                           'No suggestions available',
@@ -179,12 +286,16 @@ class _SearchPageState extends State<SearchPage> {
                         itemCount: _filteredRecipes.length,
                         itemBuilder: (context, index) {
                           return ListTile(
+                            leading: Icon(
+                              Icons.search,
+                              color: Colors.black.withOpacity(.6),
+                            ),
                             title: Text(_filteredRecipes[index]),
                             onTap: () => _onSuggestionSelected(_filteredRecipes[index]),
                           );
                         },
                       ),
-              ),
+            ),
           ],
         ),
       ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../camera/data/models/recipe_model.dart';
+import '../../models/recipe_model.dart';
 import '../camera/presentation/view/widgets/recipe_card.dart';
 import '../camera/presentation/view/available_ingredient_page.dart';
 import 'dart:convert';
