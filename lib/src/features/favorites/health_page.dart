@@ -44,9 +44,7 @@ class _HealthPageState extends State<HealthPage> {
             },
           }, SetOptions(merge: true)); // Use merge to keep existing data intact
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Preferences saved!")),
-      );
+      
     } catch (e) {
       print("Error saving preferences: $e");
       ScaffoldMessenger.of(context).showSnackBar(
@@ -95,7 +93,7 @@ class _HealthPageState extends State<HealthPage> {
                         ]
                       ),
                       child: ListTile(
-                        title: Text("Diary-Free", style: 
+                        title: Text("Dairy-Free", style: 
                         TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w400

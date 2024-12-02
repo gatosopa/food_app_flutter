@@ -7,16 +7,16 @@ import 'package:food_app_flutter/src/models/recipe_model.dart';
 
 class RoundedImage extends StatelessWidget {
   const RoundedImage({
-    super.key, 
-    this.width, 
-    this.height,  
-    this.applyImageRadius = true, 
-    this.border, 
-    this.backgroundColor = Colors.transparent, 
-    this.fit = BoxFit.cover, 
-    this.padding, 
-    this.isNetworkImage = false, 
-    this.onPressed, 
+    super.key,
+    this.width,
+    this.height,
+    this.applyImageRadius = true,
+    this.border,
+    this.backgroundColor = Colors.transparent,
+    this.fit = BoxFit.cover,
+    this.padding,
+    this.isNetworkImage = false,
+    this.onPressed,
     this.borderRadius = 20,
     required this.food,
   });
@@ -32,12 +32,9 @@ class RoundedImage extends StatelessWidget {
   final VoidCallback? onPressed;
   final double borderRadius;
 
-
   @override
   Widget build(BuildContext context) {
-    
-    
-    bool toggleIsFavorated(bool isFavorited){
+    bool toggleIsFavorated(bool isFavorited) {
       return !isFavorited;
     }
 
@@ -65,78 +62,90 @@ class RoundedImage extends StatelessWidget {
         );
       },
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         width: double.infinity,
         height: height,
-        margin: EdgeInsets.only(bottom: 5),
+        margin: const EdgeInsets.only(bottom: 5),
         padding: padding,
         decoration: BoxDecoration(
-          border: border, 
-          color: Colors.white, 
+          border: border,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(borderRadius),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.2),
               blurRadius: 20,
-              offset: Offset(0, 5)
+              offset: const Offset(0, 5),
             )
-          ]
+          ],
         ),
         child: SingleChildScrollView(
           child: Stack(
             children: [
-              
               Column(
-              children: [
-                Container(
-                  clipBehavior: Clip.hardEdge,
-                  height: 320,
-                  width: 400,
-                  margin: EdgeInsets.only(top: 10, left: 10, right: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(borderRadius)
+                children: [
+                  Container(
+                    clipBehavior: Clip.hardEdge,
+                    height: 320,
+                    width: 400,
+                    margin: const EdgeInsets.only(top: 10, left: 10, right: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(borderRadius),
+                    ),
+                    child: Image.network(
+                      food.imageUrl,
+                      fit: fit,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey[300],
+                          child: const Center(
+                            child: Icon(
+                              Icons.broken_image,
+                              size: 50,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                  child: Image(fit: fit, image: isNetworkImage? NetworkImage(food.imageUrl) : AssetImage(food.imageUrl) as ImageProvider),
-                ),
-                SizedBox(height: 30,),
-                Text(food.foodName, style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  
+                  const SizedBox(height: 30),
+                  Text(
+                    food.foodName,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                SizedBox(height: 15,),
-                
-              ]
-            ),
-
-            Positioned(
-                top : 20,
+                  const SizedBox(height: 15),
+                ],
+              ),
+              Positioned(
+                top: 20,
                 right: 20,
                 child: Container(
                   height: 50,
                   width: 50,
-                  
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(50),
-                    
                   ),
-
                   child: IconButton(
-                    onPressed: (){
+                    onPressed: () {
                       bool isFavorited = toggleIsFavorated(food.isFavorated);
                       food.isFavorated = isFavorited;
                     },
-                    icon: Icon(food.isFavorated == true ? Icons.favorite : Icons.favorite_border, color: Constants.primaryColor,),
-                    color: Constants.primaryColor,
+                    icon: Icon(
+                      food.isFavorated
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color: Constants.primaryColor,
+                    ),
                     iconSize: 30,
                   ),
-                )
+                ),
               ),
-
-             
-            ]
+            ],
           ),
         ),
       ),

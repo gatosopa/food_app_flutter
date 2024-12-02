@@ -21,7 +21,7 @@ class _MypreferencesPageState extends State<MypreferencesPage> {
   Map<String, Map<String, bool>> dietPreferences = {
     'Price': {'Cheap': false},
     'Health': {'Dairy-Free': false, 'Gluten-Free': false, 'Healthy': false},
-    'Lifestyle': {'Ketogenic': false, 'Sustainability': false, 'Vegan': false, 'Vegetarian': false},
+    'Lifestyle': {'Ketogenic': false, 'Sustainable': false, 'Vegan': false, 'Vegetarian': false},
   };
 
   bool isLoading = true; // To handle loading state
@@ -132,123 +132,132 @@ class _MypreferencesPageState extends State<MypreferencesPage> {
               fontSize: 30
             ),),
             const SizedBox(height: 20,),
-            Container(
-              width: double.infinity,
-              child: Row(
-                children: [
-                  Container(
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.blue.shade100,
-                    ),
-                    child: Icon(Ionicons.pricetag, color: Colors.blue)
-                  ),
-                  const SizedBox(width: 20,),
-                  Text(
-                    "Price",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: (){
-                      Navigator.push(context, PageTransition(child: PricePage(preferences: dietPreferences['Price']!), type: PageTransitionType.rightToLeft));
-                    },
-                    child: Container(
-                      width: 60,
-                      height: 60,
+            GestureDetector(
+                    
+              onTap: () async{
+                await fetchPreferences();
+                Navigator.push(context, PageTransition(child: PricePage(preferences: dietPreferences['Price']!), type: PageTransitionType.rightToLeft));
+              },
+              child: Container(
+                width: double.infinity,
+                child: Row(
+                  children: [
+                    Container(
+                      height: 50,
+                      width: 50,
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(15),
+                        shape: BoxShape.circle,
+                        color: Colors.blue.shade100,
                       ),
-                      child: Icon(Icons.keyboard_arrow_right, color: Constants.primaryColor)
+                      child: Icon(Ionicons.pricetag, color: Colors.blue)
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 20,),
+                    Text(
+                      "Price",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const Spacer(),
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Icon(Icons.keyboard_arrow_right, color: Constants.primaryColor)
+                      ),
+                    
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 20,),
-            Container(
-              width: double.infinity,
-              child: Row(
-                children: [
-                  Container(
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.red.shade100,
-                    ),
-                    child: Icon(Ionicons.heart, color: Constants.primaryColor,)
-                  ),
-                  const SizedBox(width: 20,),
-                  Text(
-                    "Health",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: (){
-                      Navigator.push(context, PageTransition(child: HealthPage(preferences: dietPreferences['Health']!), type: PageTransitionType.rightToLeft));
-                    },
-                    child: Container(
-                      width: 60,
-                      height: 60,
+            GestureDetector(
+              onTap: () async{
+                await fetchPreferences();
+                Navigator.push(context, PageTransition(child: HealthPage(preferences: dietPreferences['Health']!), type: PageTransitionType.rightToLeft));
+              },
+              child: Container(
+                width: double.infinity,
+                child: Row(
+                  children: [
+                    Container(
+                      height: 50,
+                      width: 50,
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(15),
+                        shape: BoxShape.circle,
+                        color: Colors.red.shade100,
                       ),
-                      child: Icon(Icons.keyboard_arrow_right, color: Constants.primaryColor)
+                      child: Icon(Ionicons.heart, color: Constants.primaryColor,)
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 20,),
+                    Text(
+                      "Health",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const Spacer(),
+                  
+                   Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Icon(Icons.keyboard_arrow_right, color: Constants.primaryColor)
+                      ),
+                    
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 20,),
-            Container(
-              width: double.infinity,
-              child: Row(
-                children: [
-                  Container(
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.green.shade100,
-                    ),
-                    child: Icon(Ionicons.medical, color: Colors.green,)
-                  ),
-                  const SizedBox(width: 20,),
-                  Text(
-                    "Lifestyle",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: (){
-                      Navigator.push(context, PageTransition(child: LifestylePage(preferences: dietPreferences['Lifestyle']!), type: PageTransitionType.rightToLeft));
-                    },
-                    child: Container(
-                      width: 60,
-                      height: 60,
+            GestureDetector(
+              onTap: () async{
+                await fetchPreferences();
+                Navigator.push(context, PageTransition(child: LifestylePage(preferences: dietPreferences['Lifestyle']!), type: PageTransitionType.rightToLeft));
+              },
+              child: Container(
+                width: double.infinity,
+                child: Row(
+                  children: [
+                    Container(
+                      height: 50,
+                      width: 50,
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(15),
+                        shape: BoxShape.circle,
+                        color: Colors.green.shade100,
                       ),
-                      child: Icon(Icons.keyboard_arrow_right, color: Constants.primaryColor)
+                      child: Icon(Ionicons.medical, color: Colors.green,)
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 20,),
+                    Text(
+                      "Lifestyle",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const Spacer(),
+                    
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Icon(Icons.keyboard_arrow_right, color: Constants.primaryColor)
+                      ),
+                    
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 20,),

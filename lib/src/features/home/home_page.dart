@@ -10,6 +10,9 @@ import 'package:dio/dio.dart';
 import 'package:food_app_flutter/src/features/recipe/recipe_page.dart';
 import 'package:food_app_flutter/src/features/home/search_page.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:food_app_flutter/src/core/utils/get_daily_recipes.dart';
+import 'package:food_app_flutter/src/core/utils/food_storage.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,8 +22,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
- // Dio instance for making requests
-
   List<Food> _foodList = [];
   List<Food> filteredFoodList = [];
   String selectedCategory = categories[0]; // default
@@ -31,8 +32,23 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _foodList = Food.foodList;
     _filterFoodList();
+    _loadDailyFoods();
   }
 
+  Future<void> _loadDailyFoods() async {
+    List<Food> foodList = await FoodStorage.getFoodList();
+    if (foodList.isNotEmpty) {
+      setState(() {
+        _foodList = foodList;
+        _isLoading = false;
+      });
+    } else {
+      print("No food found in SharedPreferences.");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
   // Filter food recipe mechanism
   void _filterFoodList() {
     setState(() {

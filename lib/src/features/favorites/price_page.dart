@@ -36,9 +36,7 @@ class _PricePageState extends State<PricePage> {
             'dietPreferences': {'Cheap': cheap},
           }, SetOptions(merge: true)); // Use merge to keep existing data intact
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Preferences saved!")),
-      );
+      
     } catch (e) {
       print("Error saving preferences: $e");
       ScaffoldMessenger.of(context).showSnackBar(
