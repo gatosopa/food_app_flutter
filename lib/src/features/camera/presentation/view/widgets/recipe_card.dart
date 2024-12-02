@@ -9,43 +9,77 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../../../models/recipe_model.dart';
 
-class RecipeCard extends StatelessWidget {
+class RecipeCard extends StatefulWidget {
   final Recipe recipe;
 
   const RecipeCard({super.key, required this.recipe});
 
-  // Helper method to convert List<String> to List<Map<String, dynamic>>
-  List<Map<String, dynamic>> mapIngredients(List<String> ingredients) {
-    return ingredients
-        .map((ingredient) => {
-              "type": "Ingredient",
-              "name": ingredient,
-              "amount": "-",
-            })
-        .toList();
+  @override
+  State<RecipeCard> createState() => _RecipeCardState();
+}
+
+class _RecipeCardState extends State<RecipeCard> {
+  bool isFavorited = false; // Tracks the favorite state
+  bool isAnimating = false; // Tracks the animation state
+
+  // Function to toggle favorite status
+  void toggleFavorite() async {
+    setState(() {
+      isFavorited = !isFavorited;
+      isAnimating = true; // Start the animation
+    });
+
+    // Wait for animation to complete
+    await Future.delayed(const Duration(milliseconds: 300));
+    setState(() {
+      isAnimating = false; // Reset animation state
+    });
+
+    // Add or remove from favorites based on the new state
+    if (isFavorited) {
+      await _addToFavorites(widget.recipe.id);
+    } else {
+      await _removeFromFavorites(widget.recipe.id);
+    }
   }
 
-  // Function to add recipe ID to user's favorites array
+  // Function to add recipe ID to user's favorites
   Future<void> _addToFavorites(int recipeId) async {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      // Handle unauthenticated state
       print("User is not signed in.");
       return;
     }
 
     try {
       final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
-
-      // Update the favorites array
       await userDoc.update({
-        'favorites': FieldValue.arrayUnion([recipeId]), // Add recipe ID to array
+        'favorites': FieldValue.arrayUnion([recipeId]),
       });
-
       print("Recipe added to favorites: $recipeId");
     } catch (e) {
       print("Error adding to favorites: $e");
+    }
+  }
+
+  // Function to remove recipe ID from user's favorites
+  Future<void> _removeFromFavorites(int recipeId) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      print("User is not signed in.");
+      return;
+    }
+
+    try {
+      final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
+      await userDoc.update({
+        'favorites': FieldValue.arrayRemove([recipeId]),
+      });
+      print("Recipe removed from favorites: $recipeId");
+    } catch (e) {
+      print("Error removing from favorites: $e");
     }
   }
 
@@ -53,11 +87,10 @@ class RecipeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navigate to DetailPage with Recipe object
         Navigator.push(
           context,
           PageTransition(
-            child: DetailPage(recipe: recipe),
+            child: DetailPage(recipe: widget.recipe),
             type: PageTransitionType.bottomToTop,
           ),
         );
@@ -80,7 +113,7 @@ class RecipeCard extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12.0),
                     child: Image.network(
-                      recipe.image,
+                      widget.recipe.image,
                       height: 150,
                       width: double.infinity,
                       fit: BoxFit.cover,
@@ -103,13 +136,16 @@ class RecipeCard extends StatelessWidget {
                     top: 8,
                     right: 8,
                     child: GestureDetector(
-                      onTap: () {
-                        _addToFavorites(recipe.id);
-                      },
-                      child: const Icon(
-                        Icons.favorite_border,
-                        color: Colors.white,
-                        size: 28.0,
+                      onTap: toggleFavorite,
+                      child: AnimatedScale(
+                        scale: isAnimating ? 1.5 : 1.0,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        child: Icon(
+                          isFavorited ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorited ? Constants.primaryColor : Colors.white,
+                          size: 28.0,
+                        ),
                       ),
                     ),
                   ),
@@ -118,7 +154,7 @@ class RecipeCard extends StatelessWidget {
               const SizedBox(height: 8.0),
               // Recipe Name and Calories
               Text(
-                recipe.title,
+                widget.recipe.title,
                 style: const TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
@@ -126,7 +162,7 @@ class RecipeCard extends StatelessWidget {
               ),
               const SizedBox(height: 4.0),
               Text(
-                "${recipe.calories} kcal",
+                "${widget.recipe.calories} kcal",
                 style: const TextStyle(
                   fontSize: 14.0,
                   color: Colors.grey,
@@ -145,7 +181,7 @@ class RecipeCard extends StatelessWidget {
                           context,
                           PageTransition(
                             child: AvailableIngredientPage(
-                              availableIngredients: mapIngredients(recipe.existingIngredients),
+                              availableIngredients: mapIngredients(widget.recipe.existingIngredients),
                             ),
                             type: PageTransitionType.bottomToTop,
                           ),
@@ -176,7 +212,7 @@ class RecipeCard extends StatelessWidget {
                           context,
                           PageTransition(
                             child: NeededIngredientPage(
-                              neededIngredients: mapIngredients(recipe.nonExistingIngredients),
+                              neededIngredients: mapIngredients(widget.recipe.nonExistingIngredients),
                             ),
                             type: PageTransitionType.bottomToTop,
                           ),
@@ -206,5 +242,16 @@ class RecipeCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // Helper method to convert List<String> to List<Map<String, dynamic>>
+  List<Map<String, dynamic>> mapIngredients(List<String> ingredients) {
+    return ingredients
+        .map((ingredient) => {
+              "type": "Ingredient",
+              "name": ingredient,
+              "amount": "-",
+            })
+        .toList();
   }
 }
