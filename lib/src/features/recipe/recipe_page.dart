@@ -95,7 +95,7 @@ class _RecipePageState extends State<RecipePage> {
         body: _bottomNavIndex == -1
             ? recipePageContent // Show RecipePage content if index is -1
             : IndexedStack(
-                index: _bottomNavIndex - 1, // Adjust index for pages
+                index: _bottomNavIndex, // Adjust index for pages
                 children: pages,
               ),
         floatingActionButton: FloatingActionButton(
@@ -122,7 +122,7 @@ class _RecipePageState extends State<RecipePage> {
             setState(() {
               if (index == 0) {
                 // Navigate to HomePage
-                _bottomNavIndex = 1; // HomePage is at index 1 in `pages`
+                _bottomNavIndex = 0; // HomePage is at index 1 in `pages`
               } else {
                 _bottomNavIndex = index;
               }

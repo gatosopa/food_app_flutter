@@ -257,7 +257,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                 ],
               )
             : IndexedStack(
-                index: _bottomNavIndex - 1, // Adjust index for pages
+                index: _bottomNavIndex, // Adjust index for pages
                 children: pages,
               ),
         floatingActionButton: FloatingActionButton(
@@ -279,8 +279,13 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
           currentIndex: _bottomNavIndex == -1 ? 0 : _bottomNavIndex,
           onTap: (index) {
             setState(() {
-              _bottomNavIndex = index == 0 ? -1 : index; // Switch back to DetailPage if index is 0
-            });
+              if (index == 0) {
+                // Navigate to HomePage
+                _bottomNavIndex = 0;
+              } else {
+                _bottomNavIndex = index;
+              }
+          });
           },
         ),
       ),
