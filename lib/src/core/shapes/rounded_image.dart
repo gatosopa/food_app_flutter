@@ -96,7 +96,7 @@ class _RoundedImageState extends State<RoundedImage> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return GestureDetector( 
       onTap: () {
         final recipe = Recipe(
           id: widget.food.foodId,
