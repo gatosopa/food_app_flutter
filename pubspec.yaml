@@ -52,6 +52,7 @@ dependencies:
   shared_preferences: ^2.3.3
   firebase_storage: ^12.3.6
   ionicons: ^0.2.2
+  auto_size_text: ^3.0.0
 
 dev_dependencies:
   flutter_test:

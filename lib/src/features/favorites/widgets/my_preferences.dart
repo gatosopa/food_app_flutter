@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:food_app_flutter/src/core/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io'; 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 
 class MyPreferences extends StatefulWidget {
   const MyPreferences({super.key});
@@ -12,11 +17,13 @@ class MyPreferences extends StatefulWidget {
 
 class _MyPreferencesState extends State<MyPreferences> {
   String displayName = "Loading..."; // Default placeholder name
+  File? profileImage;
 
   @override
   void initState() {
     super.initState();
     _fetchUserName();
+    _loadProfileImage();
   }
 
   Future<void> _fetchUserName() async {
@@ -47,6 +54,21 @@ class _MyPreferencesState extends State<MyPreferences> {
       print("Error fetching user name: $e");
     }
   }
+  Future<void> _loadProfileImage() async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final profileImagePath = path.join(directory.path, 'profile_image.png');
+      final file = File(profileImagePath);
+
+      if (await file.exists()) {
+        setState(() {
+          profileImage = file;
+        });
+      }
+    } catch (e) {
+      print("Error loading profile image: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +90,14 @@ class _MyPreferencesState extends State<MyPreferences> {
         children: [
           CircleAvatar(
             radius: 25,
-            backgroundImage: AssetImage('assets/image/pasta.jpg'),
+            backgroundImage:
+                      profileImage != null ? FileImage(profileImage!) : AssetImage(Constants.defaultProfilePhoto) as ImageProvider,
+                  child: profileImage == null
+                      ? const Icon(
+                          Icons.camera_alt,
+                          size: 50,
+                        )
+                      : null,
           ),
           const SizedBox(width: 16.0),
           Column(

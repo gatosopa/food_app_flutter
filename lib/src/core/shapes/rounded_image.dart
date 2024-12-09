@@ -6,6 +6,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:food_app_flutter/src/models/recipe_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class RoundedImage extends StatefulWidget {
   const RoundedImage({
@@ -174,7 +175,7 @@ class _RoundedImageState extends State<RoundedImage> with SingleTickerProviderSt
                     fontWeight: FontWeight.bold,
                   ),
                   overflow: TextOverflow.ellipsis, // Handle long text gracefully
-                  maxLines: 1,
+                  
                 ),
               ],
             ),

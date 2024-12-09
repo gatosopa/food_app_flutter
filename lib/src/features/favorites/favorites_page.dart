@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:food_app_flutter/src/core/constants.dart';
 import 'package:food_app_flutter/src/core/containers/section_heading.dart';
@@ -6,6 +7,11 @@ import 'package:food_app_flutter/src/features/favorites/my_preferences_page.dart
 import 'package:food_app_flutter/src/features/favorites/widgets/my_preferences.dart';
 import 'package:food_app_flutter/src/models/food.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
+
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -15,6 +21,62 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class _FavoritesPageState extends State<FavoritesPage> {
+  String username = "Loading...";
+  String email = "Loading...";
+  String dateOfBirth = "Loading...";
+  String country = "Loading...";
+  File? profileImage;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+    _loadProfileImage();
+  }
+
+Future<void> _loadUserData() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? userId = prefs.getString('firebaseUserId');
+
+      if (userId != null) {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .get();
+
+        if (userDoc.exists) {
+          setState(() {
+            username = "${userDoc['first_name'] ?? 'Unknown'} ${userDoc['last_name'] ?? ''}";
+            email = userDoc['email'] ?? 'Unknown';
+            dateOfBirth = userDoc['date_of_birth'] ?? 'Unknown';
+            country = userDoc['country'] ?? 'Unknown';
+          });
+        } else {
+          print("User document does not exist.");
+        }
+      } else {
+        print("No Firebase user ID found in local storage.");
+      }
+    } catch (e) {
+      print("Error loading user data: $e");
+    }
+  }
+  Future<void> _loadProfileImage() async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final profileImagePath = path.join(directory.path, 'profile_image.png');
+      final file = File(profileImagePath);
+
+      if (await file.exists()) {
+        setState(() {
+          profileImage = file;
+        });
+      }
+    } catch (e) {
+      print("Error loading profile image: $e");
+    }
+  }
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;

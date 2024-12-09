@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_app_flutter/src/core/constants.dart';
+import 'package:food_app_flutter/src/core/utils/food_notifier.dart';
 import 'package:food_app_flutter/src/features/home/widgets/categories.dart';
 import 'package:food_app_flutter/src/features/home/widgets/food_slider.dart';
 import 'package:food_app_flutter/src/models/cuisine.dart';
@@ -33,6 +34,18 @@ class _HomePageState extends State<HomePage> {
     _foodList = Food.foodList;
     _filterFoodList();
     _loadDailyFoods();
+
+    foodNotifier.addListener(() {
+      _loadDailyFoods();
+    });
+  }
+
+  @override
+  void dispose() {
+    foodNotifier.removeListener(() {
+      _loadDailyFoods();
+    });
+    super.dispose();
   }
 
   Future<void> _loadDailyFoods() async {

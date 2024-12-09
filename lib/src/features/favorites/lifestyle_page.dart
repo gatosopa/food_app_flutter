@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:food_app_flutter/src/core/constants.dart';
+import 'package:dio/dio.dart';
+import 'package:food_app_flutter/src/models/food.dart';
+import 'package:food_app_flutter/src/models/recipe_model.dart';
+import 'package:food_app_flutter/src/core/utils/food_storage.dart';
 
 class LifestylePage extends StatefulWidget {
   const LifestylePage({super.key, required this.preferences});
@@ -27,35 +31,128 @@ class _LifestylePageState extends State<LifestylePage> {
   }
 
   Future<void> savePreferences() async {
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        throw Exception("User not signed in.");
-      }
-
-      final userId = user.uid;
-
-      // Save preferences under /users/{userId}
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .set({
-            'dietPreferences': {
-              'Ketogenic': ketogenic,
-              'Sustainable': sustainable,
-              'Vegan': vegan, 
-              'Vegetarian': vegetarian,
-            },
-          }, SetOptions(merge: true)); // Use merge to keep existing data intact
-
-      
-    } catch (e) {
-      print("Error saving preferences: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Error saving preferences.")),
-      );
+  try {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      throw Exception("User not signed in.");
     }
+
+    final userId = user.uid;
+
+    // Save preferences under /users/{userId}
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .set({
+          'dietPreferences': {
+            'Ketogenic': ketogenic,
+            'Sustainable': sustainable,
+            'Vegan': vegan, 
+            'Vegetarian': vegetarian,
+          },
+        }, SetOptions(merge: true));
+
+    
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Preferences saved and updated successfully.")),
+    );
+  } catch (e) {
+    print("Error saving preferences: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Error saving preferences.")),
+    );
   }
+}
+
+// Copy these functions into your LifestylePage class
+Future<void> fetchPreferences() async {
+  try {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      throw Exception("User not signed in.");
+    }
+
+    final userId = user.uid;
+
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .get();
+
+    if (doc.exists && doc.data() != null) {
+      final data = doc.data()!;
+      final savedPreferences =
+          Map<String, bool>.from(data['dietPreferences'] ?? {});
+
+      setState(() {
+        ketogenic = savedPreferences['Ketogenic'] ?? false;
+        sustainable = savedPreferences['Sustainable'] ?? false;
+        vegan = savedPreferences['Vegan'] ?? false;
+        vegetarian = savedPreferences['Vegetarian'] ?? false;
+      });
+    }
+  } catch (e) {
+    print("Error fetching preferences: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Error fetching preferences.")),
+    );
+  }
+}
+
+Future<void> _fetchDailyRecipes() async {
+  try {
+    Dio dio = Dio();
+    final includeTags = [
+      if (ketogenic) 'ketogenic',
+      if (sustainable) 'sustainable',
+      if (vegan) 'vegan',
+      if (vegetarian) 'vegetarian',
+    ];
+
+    final requestData = {
+      'include_tags': includeTags,
+      'number': 2,
+    };
+
+    final response = await dio.post(
+      '${Constants.serverIP}/get_daily_recipes',
+      data: requestData,
+      options: Options(
+        headers: {'Content-Type': 'application/json'},
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      final recipes = response.data;
+
+      if (recipes is Map<String, dynamic> && recipes['recipe_info'] is List) {
+        final recipeList = recipes['recipe_info'] as List<dynamic>;
+
+        // Convert recipes to Food list
+        List<Food> foodList = recipeList.map((recipe) {
+          Recipe recipeObj = Recipe.fromJson(recipe);
+          return recipeObj.toFood();
+        }).toList();
+
+        // Save the Food list locally
+        await FoodStorage.saveFoodList(foodList);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Daily recipes updated.")),
+        );
+      }
+    } else {
+      print("Failed to fetch recipes. Status code: ${response.statusCode}");
+    }
+  } catch (e) {
+    print("Error fetching daily recipes: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Error fetching daily recipes.")),
+    );
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,6 +207,11 @@ class _LifestylePageState extends State<LifestylePage> {
                               ketogenic = value;
                             });
                             await savePreferences();
+                            // Fetch updated preferences
+                            await fetchPreferences();
+
+                            // Fetch daily recipes based on the updated preferences
+                            await _fetchDailyRecipes();
                           },
                         ),
                       ),
@@ -151,6 +253,11 @@ class _LifestylePageState extends State<LifestylePage> {
                               sustainable = value;
                             });
                             await savePreferences();
+                            // Fetch updated preferences
+                            await fetchPreferences();
+
+                            // Fetch daily recipes based on the updated preferences
+                            await _fetchDailyRecipes();
                           },
                         ),
                       ),
@@ -192,6 +299,11 @@ class _LifestylePageState extends State<LifestylePage> {
                               vegan = value;
                             });
                             await savePreferences();
+                            // Fetch updated preferences
+                            await fetchPreferences();
+
+                            // Fetch daily recipes based on the updated preferences
+                            await _fetchDailyRecipes();
                           },
                         ),
                       ),
@@ -233,6 +345,11 @@ class _LifestylePageState extends State<LifestylePage> {
                               vegetarian = value;
                             });
                             await savePreferences();
+                            // Fetch updated preferences
+                            await fetchPreferences();
+
+                            // Fetch daily recipes based on the updated preferences
+                            await _fetchDailyRecipes();
                           },
                         ),
                       ),

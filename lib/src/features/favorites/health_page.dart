@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:food_app_flutter/src/core/constants.dart';
+import 'package:dio/dio.dart';
+import 'package:food_app_flutter/src/models/food.dart';
+import 'package:food_app_flutter/src/models/recipe_model.dart';
+import 'package:food_app_flutter/src/core/utils/food_storage.dart';
+
 
 class HealthPage extends StatefulWidget {
   const HealthPage({super.key, required this.preferences});
@@ -52,6 +57,94 @@ class _HealthPageState extends State<HealthPage> {
       );
     }
   }
+
+  // Copy these functions into your LifestylePage class
+Future<void> fetchPreferences() async {
+  try {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      throw Exception("User not signed in.");
+    }
+
+    final userId = user.uid;
+
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .get();
+
+    if (doc.exists && doc.data() != null) {
+      final data = doc.data()!;
+      final savedPreferences =
+          Map<String, bool>.from(data['dietPreferences'] ?? {});
+
+      setState(() {
+        dairy_free = savedPreferences['Dairy-Free'] ?? false;
+        gluten_free = savedPreferences['Gluten-Free'] ?? false;
+        healthy = savedPreferences['Healthy'] ?? false;
+      
+      });
+    }
+  } catch (e) {
+    print("Error fetching preferences: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Error fetching preferences.")),
+    );
+  }
+}
+
+Future<void> _fetchDailyRecipes() async {
+  try {
+    Dio dio = Dio();
+    final includeTags = [
+      if (dairy_free) 'dairy_free',
+      if (gluten_free) 'gluten_free', 
+      if (healthy) 'healthy',
+      
+    ];
+
+    final requestData = {
+      'include_tags': includeTags,
+      'number': 2,
+    };
+
+    final response = await dio.post(
+      '${Constants.serverIP}/get_daily_recipes',
+      data: requestData,
+      options: Options(
+        headers: {'Content-Type': 'application/json'},
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      final recipes = response.data;
+
+      if (recipes is Map<String, dynamic> && recipes['recipe_info'] is List) {
+        final recipeList = recipes['recipe_info'] as List<dynamic>;
+
+        // Convert recipes to Food list
+        List<Food> foodList = recipeList.map((recipe) {
+          Recipe recipeObj = Recipe.fromJson(recipe);
+          return recipeObj.toFood();
+        }).toList();
+
+        // Save the Food list locally
+        await FoodStorage.saveFoodList(foodList);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Daily recipes updated.")),
+        );
+      }
+    } else {
+      print("Failed to fetch recipes. Status code: ${response.statusCode}");
+    }
+  } catch (e) {
+    print("Error fetching daily recipes: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Error fetching daily recipes.")),
+    );
+  }
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,6 +200,11 @@ class _HealthPageState extends State<HealthPage> {
                             });
 
                             await savePreferences();
+                            // Fetch updated preferences
+                            await fetchPreferences();
+
+                            // Fetch daily recipes based on the updated preferences
+                            await _fetchDailyRecipes();
                           },
                         ),
                       ),
@@ -149,6 +247,11 @@ class _HealthPageState extends State<HealthPage> {
                             });
 
                             await savePreferences();
+                            // Fetch updated preferences
+                            await fetchPreferences();
+
+                            // Fetch daily recipes based on the updated preferences
+                            await _fetchDailyRecipes();
                           },
                         ),
                       ),
@@ -190,6 +293,11 @@ class _HealthPageState extends State<HealthPage> {
                               healthy = value;
                             });
                             await savePreferences();
+                            // Fetch updated preferences
+                            await fetchPreferences();
+
+                            // Fetch daily recipes based on the updated preferences
+                            await _fetchDailyRecipes();
                           },
                         ),
                       ),

@@ -1,3 +1,4 @@
+import 'package:food_app_flutter/src/core/utils/food_notifier.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:food_app_flutter/src/models/food.dart';  
@@ -9,7 +10,7 @@ class FoodStorage {
     String jsonString = jsonEncode(foodList.map((food) => food.toMap()).toList());
     print("Saving food list: $jsonString");
     await prefs.setString('daily_foods', jsonString);
-    
+    foodNotifier.refresh();
   }
 
   // Retrieve a list of Food objects from SharedPreferences
