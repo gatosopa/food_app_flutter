@@ -12,6 +12,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:dio/dio.dart';
+import 'package:food_app_flutter/src/models/recipe_model.dart'; // Add this import at the top of your file
+import 'dart:convert';
+import 'package:food_app_flutter/src/features/recipe/detail_page.dart'; // Add this import at the top of your file
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -34,10 +37,28 @@ class _FavoritesPageState extends State<FavoritesPage> {
     super.initState();
     _loadUserData();
     _loadProfileImage();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _fetchFavoriteRecipes();
   }
 
+  List<Recipe> parseRecipes(String jsonData) {
+    final data = jsonDecode(jsonData);
+    if (data is List) {
+      return data.map((recipe) => Recipe.fromJson(recipe)).toList();
+    } else {
+      throw Exception('Invalid JSON format for recipes');
+    }
+  }
+
   Future<void> _fetchFavoriteRecipes() async {
+    setState(() {
+      isLoading = true;
+    });
+
     try {
       // Get the logged-in user's ID
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -52,17 +73,21 @@ class _FavoritesPageState extends State<FavoritesPage> {
       final response = await dio.get('${Constants.serverIP}/get_fav_recipes/$userId');
 
       if (response.statusCode == 200) {
-        final recipes = response.data['recipes'] as List;
+        final data = response.data;
 
+        // Parse recipes using parseRecipes
+        final recipes = parseRecipes(jsonEncode(data['recipe_info']));
+
+        // Convert recipes to Food objects
         setState(() {
-          favoriteRecipes = recipes.map((recipe) => Food.fromJson(recipe)).toList();
-          isLoading = false;
+          favoriteRecipes = recipes.map((recipe) => recipe.toFood()).toList();
         });
       } else {
         throw Exception("Failed to fetch favorite recipes. Status code: ${response.statusCode}");
       }
     } catch (e) {
       print("Error fetching favorite recipes: $e");
+    } finally {
       setState(() {
         isLoading = false;
       });
@@ -187,7 +212,22 @@ class _FavoritesPageState extends State<FavoritesPage> {
                           itemCount: favoriteRecipes.length,
                           itemBuilder: (context, index) {
                             final food = favoriteRecipes[index];
-                            return FoodCard(food: food);
+                            return FoodCard(
+                              food: food,
+                              recipe: Recipe(
+                                  id: food.foodId,
+                                  title: food.foodName,
+                                  image: food.imageUrl,
+                                  calories: food.foodCalories,
+                                  existingIngredients: food.steps,
+                                  nonExistingIngredients: [],
+                                  nutrients: food.nutrients ?? [],
+                                  steps: food.steps,
+                                  cuisineType: food.cuisine ?? 'Unknown',
+                                  cookingTime: food.cookingTime,
+                              )
+                              
+                            );
                           },
                         ),
                       ),
