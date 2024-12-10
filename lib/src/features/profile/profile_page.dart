@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:food_app_flutter/src/features/onboarding/onboarding_page.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
+import 'package:food_app_flutter/src/core/utils/profile_notifier.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -27,8 +28,13 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     _loadUserData();
-    _loadProfileImage();
+    
+    profileNotifier.addListener(() {
+      _loadProfileImage();
+    });
   }
+
+  
 
   Future<void> _loadUserData() async {
     try {
@@ -60,20 +66,25 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _loadProfileImage() async {
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final profileImagePath = path.join(directory.path, 'profile_image.png');
-      final file = File(profileImagePath);
+  try {
+    final directory = await getApplicationDocumentsDirectory();
+    final profileImagePath = path.join(directory.path, 'profile_image.png');
+    final file = File(profileImagePath);
 
-      if (await file.exists()) {
-        setState(() {
-          profileImage = file;
-        });
-      }
-    } catch (e) {
-      print("Error loading profile image: $e");
+    if (await file.exists()) {
+      setState(() {
+        // Add a unique identifier to the FileImage
+        profileImage = File(profileImagePath);
+      });
+    } else {
+      setState(() {
+        profileImage = null; // Handle case where no image is found
+      });
     }
+  } catch (e) {
+    print("Error loading profile image: $e");
   }
+}
 
   Future<void> _logout(BuildContext context) async {
     bool? shouldLogout = await showDialog(
@@ -128,10 +139,17 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Constants.backgroundColor,
       appBar: AppBar(
-        title: Text(
-          Constants.tProfile,
-          style: Theme.of(context).textTheme.titleMedium,
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+        title: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Text("Profile", style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Colors.black,
+            fontSize: 30
+          ),),
         ),
         actions: [
           IconButton(
@@ -142,7 +160,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
       body: SingleChildScrollView(
-        child: Padding(
+                child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -163,10 +181,17 @@ class _ProfilePageState extends State<ProfilePage> {
                   );
 
                   if (updatedInfo != null) {
-                    _loadProfileImage(); // Reload profile image after edit
+                    setState(() {
+                      username = updatedInfo['username'] ?? username;
+                      email = updatedInfo['email'] ?? email;
+                      dateOfBirth = updatedInfo['birthday'] ?? dateOfBirth;
+                      country = updatedInfo['country'] ?? country;
+                    });
+                    await _loadProfileImage();
                   }
                 },
                 child: CircleAvatar(
+                  key: ValueKey(profileImage?.path), // Use the image path to force rebuild
                   radius: 60,
                   backgroundImage:
                       profileImage != null ? FileImage(profileImage!) : AssetImage(Constants.defaultProfilePhoto) as ImageProvider,
@@ -242,7 +267,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         dateOfBirth = updatedInfo['birthday'] ?? dateOfBirth;
                         country = updatedInfo['country'] ?? country;
                       });
-                      _loadProfileImage(); // Reload profile image after edit
+                      await _loadProfileImage(); // Reload profile image after edit
                     }
                   },
                   child: Text(

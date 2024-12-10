@@ -15,6 +15,8 @@ import 'package:dio/dio.dart';
 import 'package:food_app_flutter/src/models/recipe_model.dart'; // Add this import at the top of your file
 import 'dart:convert';
 import 'package:food_app_flutter/src/features/recipe/detail_page.dart'; // Add this import at the top of your file
+import 'package:firebase_auth/firebase_auth.dart'; // Add t
+import 'package:food_app_flutter/src/core/utils/favorite_notifier.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -30,13 +32,27 @@ class _FavoritesPageState extends State<FavoritesPage> {
   String country = "Loading...";
   File? profileImage;
   List<Food> favoriteRecipes = [];
+  List<String> fridgeIngredients = [];
   bool isLoading = true;
+  late List<Recipe>recipes = [];
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
     _loadProfileImage();
+
+    favoriteNotifier.addListener(() {
+      _fetchFavoriteRecipes();
+    });
+  }
+
+  @override
+  void dispose() {
+    favoriteNotifier.removeListener(() {
+      _fetchFavoriteRecipes();
+    });
+    super.dispose();
   }
 
   @override
@@ -51,6 +67,28 @@ class _FavoritesPageState extends State<FavoritesPage> {
       return data.map((recipe) => Recipe.fromJson(recipe)).toList();
     } else {
       throw Exception('Invalid JSON format for recipes');
+    }
+  }
+
+  Future<void> _fetchFridgeIngredients() async {
+    try {
+      String? userId = FirebaseAuth.instance.currentUser?.uid;
+
+      if (userId == null) {
+        throw Exception("No user is currently logged in.");
+      }
+
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+      if (userDoc.exists) {
+        setState(() {
+          fridgeIngredients = List<String>.from(userDoc['fridge_ingredients'] ?? []);
+        });
+      } else {
+        throw Exception("User document does not exist.");
+      }
+    } catch (e) {
+      print("Error fetching fridge ingredients: $e");
     }
   }
 
@@ -76,10 +114,10 @@ class _FavoritesPageState extends State<FavoritesPage> {
         final data = response.data;
 
         // Parse recipes using parseRecipes
-        final recipes = parseRecipes(jsonEncode(data['recipe_info']));
+        recipes = parseRecipes(jsonEncode(data['recipe_info']));
 
         // Convert recipes to Food objects
-        setState(() {
+        setState(() { 
           favoriteRecipes = recipes.map((recipe) => recipe.toFood()).toList();
         });
       } else {
@@ -214,18 +252,12 @@ class _FavoritesPageState extends State<FavoritesPage> {
                             final food = favoriteRecipes[index];
                             return FoodCard(
                               food: food,
-                              recipe: Recipe(
-                                  id: food.foodId,
-                                  title: food.foodName,
-                                  image: food.imageUrl,
-                                  calories: food.foodCalories,
-                                  existingIngredients: food.steps,
-                                  nonExistingIngredients: [],
-                                  nutrients: food.nutrients ?? [],
-                                  steps: food.steps,
-                                  cuisineType: food.cuisine ?? 'Unknown',
-                                  cookingTime: food.cookingTime,
-                              )
+                              recipe: recipes.firstWhere((recipe) => recipe.id == food.foodId),
+                              onFavoriteUpdated: (){
+                                setState((){
+                                  favoriteRecipes.remove(food);
+                                });
+                              },
                               
                             );
                           },

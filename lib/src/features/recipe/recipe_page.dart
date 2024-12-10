@@ -30,7 +30,7 @@ class RecipePage extends StatefulWidget {
   State<RecipePage> createState() => _RecipePageState();
 }
 
-class _RecipePageState extends State<RecipePage> {
+class _RecipePageState extends State<RecipePage> { 
   int _bottomNavIndex = -1; // Use -1 to represent the RecipePage itself
 
   // List of other pages

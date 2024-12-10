@@ -2,14 +2,14 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:food_app_flutter/src/models/recipe_model.dart';
+
 
 class RecipeviewAppbar extends StatelessWidget {
-  final Recipe recipe;
+  final String recipeImage;
 
   const RecipeviewAppbar({
     super.key,
-    required this.recipe,
+    required this.recipeImage,
   });
 
   @override
@@ -23,7 +23,7 @@ class RecipeviewAppbar extends StatelessWidget {
       stretch: true,
       flexibleSpace: FlexibleSpaceBar(
         background: Image.network(
-          recipe.image,
+          recipeImage,
           fit: BoxFit.cover,
         ),
         stretchModes: const [

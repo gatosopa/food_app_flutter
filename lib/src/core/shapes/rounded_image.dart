@@ -7,6 +7,8 @@ import 'package:food_app_flutter/src/models/recipe_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:provider/provider.dart'; 
+import 'package:food_app_flutter/src/core/utils/favorite_notifier.dart';
 
 class RoundedImage extends StatefulWidget {
   const RoundedImage({
@@ -90,6 +92,7 @@ class _RoundedImageState extends State<RoundedImage> with SingleTickerProviderSt
         });
         print("Removed from favorites: ${widget.food.foodId}");
       }
+      favoriteNotifier.refresh();
     } catch (e) {
       print("Error updating favorites: $e");
     }
@@ -104,14 +107,16 @@ class _RoundedImageState extends State<RoundedImage> with SingleTickerProviderSt
           title: widget.food.foodName,
           image: widget.food.imageUrl,
           calories: widget.food.foodCalories,
-          existingIngredients: [], // Populate appropriately
-          nonExistingIngredients: [], // Populate appropriately
-          nutrients: [], // Populate appropriately
+           // Populate appropriately
+          nutrients: [],
+          existingIngredients: widget.food.existingIngredients,// Populate appropriately
+          nonExistingIngredients: widget.food.nonExistingIngredients, // Populate appropriately
           steps: widget.food.steps,
           cuisineType: 'Unknown', // Populate appropriately
           cookingTime: null, // Populate appropriately
         );
-
+        print(widget.food.existingIngredients);
+        print(widget.food.nonExistingIngredients);
         Navigator.push(
           context,
           PageTransition(

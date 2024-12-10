@@ -107,9 +107,15 @@ class _RootDeciderState extends State<RootDecider> {
   Future<void> _fetchDailyRecipes() async {
     try {
       Dio dio = Dio();
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception("User not signed in.");
+      }
+      final userId = user.uid;
       final requestData = {
         'include_tags': _includeTags,
         'number': 2,
+        'user_id': userId,
       };
 
       print("Sending request with data: $requestData");
@@ -134,9 +140,11 @@ class _RootDeciderState extends State<RootDecider> {
         // Convert recipes to Food list
         List<Food> foodList = recipeList.map((recipe) {
           Recipe recipeObj = Recipe.fromJson(recipe);
-          return recipeObj.toFood();
+          final food = recipeObj.toFood();
+          
+          return food;
         }).toList();
-
+        print('in fetch daily recipes: Non Existing: ${foodList[0].nonExistingIngredients} Existing: ${foodList[0].existingIngredients}');
         // Save the Food list locally
         await FoodStorage.saveFoodList(foodList);
       }

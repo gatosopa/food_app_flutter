@@ -115,7 +115,7 @@ class _HomePageState extends State<HomePage> {
           // Sliver app bar
           SliverAppBar(
             backgroundColor: Constants.primaryColor,
-            leading: const Icon(Icons.menu),
+            
             expandedHeight: 110,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(

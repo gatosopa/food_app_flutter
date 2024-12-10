@@ -9,6 +9,7 @@ import 'package:food_app_flutter/src/models/food.dart';
 import 'package:food_app_flutter/src/models/recipe_model.dart';
 import 'package:food_app_flutter/src/features/recipe/recipe_page.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // 
 
 List<Recipe> parseRecipes(String jsonData) {
   final data = jsonDecode(jsonData);
@@ -62,7 +63,8 @@ class _SearchPageState extends State<SearchPage> {
     'Casserole',
     'Dumplings',
     'Mac and Cheese',
-    'Stir Fry'
+    'Stir Fry',
+    'Chicken',
   ];
 
   List<String> _filteredRecipes = [];
@@ -108,10 +110,16 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       _isLoading = true;
     });
+    String? userId = FirebaseAuth.instance.currentUser?.uid;
+
+      if (userId == null) {
+        throw Exception("No user is currently logged in.");
+      }
 
     final requestData = {
       'keyword': keyword,
       'number': number,
+      'user_id': userId, 
     };
 
     // Log the request data
@@ -139,15 +147,11 @@ class _SearchPageState extends State<SearchPage> {
         }
       } else {
         print("Failed to fetch recipes. Status Code: ${response.statusCode}");
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to fetch recipes.")),
-        );
+        
       }
     } catch (e) {
       print("Error sending data to backend: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error fetching recipes: $e")),
-      );
+      
     } finally {
       setState(() {
         _isLoading = false;
@@ -175,6 +179,9 @@ class _SearchPageState extends State<SearchPage> {
   void _onSearchSubmitted(String query) {
     FocusScope.of(context).unfocus();
     sendSearchQuery(query, 2);
+    setState(() {
+      _isLoading = true;
+    });
   
   }
 

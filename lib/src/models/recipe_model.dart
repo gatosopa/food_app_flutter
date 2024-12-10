@@ -10,7 +10,8 @@ class Recipe {
   final List<String> nutrients;
   final List<String> steps;
   final String cuisineType;
-  final int? cookingTime; // Nullable for when no cooking time is provided
+  final int? cookingTime;
+  final int matchCount; // Nullable for when no cooking time is provided
 
   Recipe({
     required this.id,
@@ -23,6 +24,7 @@ class Recipe {
     required this.steps,
     required this.cuisineType,
     this.cookingTime,
+    this.matchCount = 0
   });
 
   // Factory constructor to parse JSON
@@ -40,7 +42,7 @@ class Recipe {
       image: json['image'] as String,
       calories: calories,
       existingIngredients:
-          List<String>.from(json['existing_ingredients'] ?? []),
+          List<String>.from(json['existing_ingredients'] ?? [])..shuffle(),
       nonExistingIngredients:
           List<String>.from(json['non_existing_ingredients'] ?? []),
       nutrients: nutrients,
@@ -74,6 +76,8 @@ class Recipe {
       'isVegetarian': false,
       'isHealthy': false,
     },
+    existingIngredients: existingIngredients,
+    nonExistingIngredients: nonExistingIngredients,
   );
 }
 

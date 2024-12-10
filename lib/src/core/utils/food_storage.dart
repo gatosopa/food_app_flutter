@@ -10,7 +10,7 @@ class FoodStorage {
     String jsonString = jsonEncode(foodList.map((food) => food.toMap()).toList());
     print("Saving food list: $jsonString");
     await prefs.setString('daily_foods', jsonString);
-    foodNotifier.refresh();
+    foodNotifier.refresh(); // Refresh the food list
   }
 
   // Retrieve a list of Food objects from SharedPreferences

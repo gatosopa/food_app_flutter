@@ -54,9 +54,6 @@ class _LifestylePageState extends State<LifestylePage> {
 
     
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Preferences saved and updated successfully.")),
-    );
   } catch (e) {
     print("Error saving preferences: $e");
     ScaffoldMessenger.of(context).showSnackBar(
@@ -109,10 +106,17 @@ Future<void> _fetchDailyRecipes() async {
       if (vegan) 'vegan',
       if (vegetarian) 'vegetarian',
     ];
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      throw Exception("User not signed in.");
+    }
+
+    final userId = user.uid;
 
     final requestData = {
       'include_tags': includeTags,
       'number': 2,
+      'user_id': userId,
     };
 
     final response = await dio.post(
@@ -138,9 +142,7 @@ Future<void> _fetchDailyRecipes() async {
         // Save the Food list locally
         await FoodStorage.saveFoodList(foodList);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Daily recipes updated.")),
-        );
+        
       }
     } else {
       print("Failed to fetch recipes. Status code: ${response.statusCode}");

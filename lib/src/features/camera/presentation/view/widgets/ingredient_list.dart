@@ -31,55 +31,38 @@ class IngredientList extends StatelessWidget {
           itemCount: items.length,
           itemBuilder: (context, index) {
             final item = items[index];
-            return Card(
-              margin: const EdgeInsets.only(bottom: 10.0),
-              elevation: 2.0,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Display ingredient details
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "ITEM TYPE: ${item['type']}",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Constants.primaryColor,
+            return Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Card(
+                margin: const EdgeInsets.only(bottom: 10.0),
+                elevation: 2.0,
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Display ingredient details
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                      
+                          const SizedBox(height: 4.0),
+                          Text(
+                            item['name'],
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4.0),
-                        Text(
-                          item['name'],
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4.0),
-                        Text(
-                          item['amount'],
-                          style: const TextStyle(fontSize: 14, color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                    // Action buttons
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: () => onRemove(index),
-                          icon: Icon(Icons.remove, color: Constants.primaryColor),
-                        ),
-                        IconButton(
-                          onPressed: onAdd,
-                          icon: Icon(Icons.add, color: Constants.primaryColor),
-                        ),
-                      ],
-                    ),
-                  ],
+                          const SizedBox(height: 4.0),
+                          
+                        ],
+                      ),
+                      // Action buttons
+                      
+                    ],
+                  ),
                 ),
               ),
             );

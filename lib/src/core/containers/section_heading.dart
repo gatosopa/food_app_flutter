@@ -19,12 +19,16 @@ class SectionHeading extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text(title,
-          style: TextStyle(
-            color: textColor,
-            fontWeight: FontWeight.w800,
-            fontSize: 22,
-          )
+        Expanded(
+          child: Text(title,
+            style: TextStyle(
+              color: textColor,
+              fontWeight: FontWeight.w800,
+              fontSize: 22,
+            ),
+            maxLines: 3, // Allow up to 3 lines
+            overflow: TextOverflow.ellipsis, // Add ellipsis if the text overflows
+          ),
         ),
         if(showActionButton) TextButton(onPressed: onPressed, child: Text(buttonTitle),)
       ],

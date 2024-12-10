@@ -10,7 +10,9 @@ class Food {
   final String? cuisine;
   final int? cookingTime;
   final List<String>? nutrients;
-  final Map<String, bool> diet; // Store dietary preferences as a map
+  final Map<String, bool> diet;
+  final List<String> existingIngredients;
+  final List<String> nonExistingIngredients; // Store dietary preferences as a map
   bool isSelected;
   bool isFavorated;
 
@@ -27,6 +29,8 @@ class Food {
     required this.diet,
     required this.isSelected,
     required this.isFavorated,
+    required this.existingIngredients,
+    required this.nonExistingIngredients,
   });
 
   // Static list of food items (Mock Data)
@@ -54,17 +58,21 @@ class Food {
       },
       isFavorated: true,
       isSelected: false,
+      existingIngredients: [],
+      nonExistingIngredients: [],
     ),
   ];
 
   // Factory Constructor for JSON Parsing
   factory Food.fromJson(Map<String, dynamic> json) {
+    print("Parsing Food JSON: $json");
     return Food(
       foodId: json['id'],
       foodName: json['name'],
       foodCalories: json['calories'],
       imageUrl: json['image'],
       recipes: json['recipes'],
+      
       steps: List<String>.from(json['steps'] ?? []),
       cuisine: json['cuisine'],
       cookingTime: json['cooking_time'],
@@ -72,6 +80,9 @@ class Food {
       diet: Map<String, bool>.from(json['diet'] ?? {}),
       isFavorated: json['isFavorited'] ?? false,
       isSelected: json['isSelected'] ?? false,
+      existingIngredients: List<String>.from(json['existing_ingredients'] ?? []),
+      nonExistingIngredients: List<String>.from(json['non_existing_ingredients'] ?? []),
+      
     );
   }
 
@@ -90,6 +101,8 @@ class Food {
       'diet': diet,
       'isFavorited': isFavorated,
       'isSelected': isSelected,
+      'existing_ingredients': existingIngredients,
+      'non_existing_ingredients': nonExistingIngredients,
     };
   }
 

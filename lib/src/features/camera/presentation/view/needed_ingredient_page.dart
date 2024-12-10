@@ -37,12 +37,13 @@ class _NeededIngredientPageState extends State<NeededIngredientPage> {
             expandedHeight: 110,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
-              title: const Text(
-                'Needed Ingredients',
-                style: TextStyle(color: Colors.white),
-              ),
+              background: Container(),
+              title: Text('F O O D I E', style: TextStyle(
+                color: Constants.secondaryColor,
+                fontWeight: FontWeight.w500,
+              ),),
               centerTitle: true,
-            ),
+              ),
           ),
           SliverToBoxAdapter(
             child: Padding(

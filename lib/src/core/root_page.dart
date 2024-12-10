@@ -19,11 +19,11 @@ class _RootPageState extends State<RootPage> {
   int _bottomNavIndex = 0;
 
   // List of pages
-  final List<Widget> pages = const [
+  final List<Widget> pages = [
     HomePage(),
     InventoryPage(),
     FavoritesPage(),
-    ProfilePage(),
+    ProfilePage(key: UniqueKey(),),
   ];
 
   @override

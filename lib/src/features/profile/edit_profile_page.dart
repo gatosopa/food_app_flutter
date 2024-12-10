@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:food_app_flutter/src/core/utils/profile_notifier.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
@@ -122,6 +123,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           }
         }
 
+
         if (emailController.text.trim() != widget.email) {
           await currentUser.updateEmail(emailController.text.trim());
         }
@@ -141,7 +143,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           'country': countryController.text.trim(),
         });
       }
-
+      profileNotifier.refresh();
       Navigator.pop(context, {
         'username': usernameController.text.trim(),
         'email': emailController.text.trim(),
