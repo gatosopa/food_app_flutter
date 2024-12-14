@@ -57,7 +57,7 @@ This project is a Flask-based backend API that integrates with Firebase and Spoo
 
 5. **Run the Application**:
    ```bash
-   python app.py
+   python server.py
    ```
 
    The app will start running on `http://localhost:5000`.
